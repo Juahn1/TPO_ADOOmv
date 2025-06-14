@@ -1,7 +1,9 @@
 package Model;
 
-public class Firebase {
-    public void enviarPush(String idUsuario, String texto) {
-        System.out.println("Push enviado a " + idUsuario + ": " + texto);
+public class Firebase{
+	
+	//Ejemplo de notificacion
+    public void enviarNotificacion(Usuario usuario) {
+    System.out.println("Se notifica al usuario " + usuario.getUsername() + " Felicitaciones!");
     }
 }

@@ -13,8 +13,7 @@ public class PartidoDTO {
 		this.deporte = deporte;
 		this.cantJugadores = cantJugadores;
 		this.duracion = duracion;
-		this.ubicacion = ubicacion;
-		
+		this.ubicacion = ubicacion;	
 	}
 	
 }

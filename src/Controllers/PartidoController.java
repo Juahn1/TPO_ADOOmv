@@ -4,8 +4,13 @@ import Model.Partido;
 import Model.PartidoDTO;
 
 public class PartidoController {
-	private Partido partido;
 	
+	private List<Partido> partidos = new ArrayList<>();
+	
+	
+	public PartidoController() {
+		
+	}
 	
 	
 	public Partido crearPartido(PartidoDTO partido) {

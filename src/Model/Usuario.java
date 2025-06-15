@@ -20,9 +20,11 @@ public class Usuario {
 		this.registrarse();
 	}
 	
-	public void registrarse() {
-		System.out.println("Usuario registrado: " + this.nombreUsuario);
-	}
+	public UsuarioDTO registrarse(List<Usuario> listaUsuarios) {
+	        listaUsuarios.add(this);
+	        System.out.println("Usuario registrado: " + this.nombreUsuario);
+        return this.toDTO();
+    	}
 
 	public List<PartidoDTO> consultarHistorialPartidos() {
         	return partidos.stream().map(Partido::toDTO).collect(Collectors.toList());

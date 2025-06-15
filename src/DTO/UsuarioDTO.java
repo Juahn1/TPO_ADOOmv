@@ -12,4 +12,5 @@ public class UsuarioDTO {
     private String correo;
     private String password;
     private List<Deporte> deportes;
+    private boolean sesion;
 }

@@ -1,7 +1,7 @@
 package Model;
 
 import Strategy.EstrategiaEmparejamiento;
-
+import DTO.*;
 import java.util.List;
 
 public class Partido {
@@ -51,4 +51,12 @@ public class Partido {
 	public void setEstrategia() {
 		
 	}
+
+	 public PartidoDTO toDTO() {
+        	PartidoDTO dto = new PartidoDTO();
+       		dto.setNombreDeporte(this.deporte.getNombre());
+        	dto.setEstado(this.estado.name());
+        	dto.setUbicacion(this.ubicacion.toDTO());
+        return dto;
+    }
 }

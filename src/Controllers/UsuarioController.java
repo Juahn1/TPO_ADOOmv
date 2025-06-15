@@ -50,17 +50,17 @@ public class UsuarioController {
         	return nuevoUsuario.registrarse(usuarios);
     	}
 	
-	public UsuarioDTO iniciarSesion(String nombre, String contrasena) {
-		        for (Usuario u : usuarios) {
-		            UsuarioDTO dto = u.login(nombre, contrasena);
-		            if (dto != null) {
-		                this.setUsuario(u);
-		                return dto;
-		            }
-		        }
-		        System.out.println("Usuario o contraseña incorrectos. Intente nuevamente.");
+	 public UsuarioDTO iniciarSesion(String nombre, String contrasena, List<Usuario> usuarios) {
+	        for (Usuario u : usuarios) {
+	            UsuarioDTO dto = u.login(nombre, contrasena);
+	            if (dto != null) {
+	                this.setUsuario(u);
+	                return dto;
+	            }
+	        }
+	        System.out.println("Usuario o contraseña incorrectos. Intente nuevamente.");
 	        return null;
-    	}
+	    }
 
 	
     public UsuarioDTO iniciarSesion(String nombre, String contrasena) {

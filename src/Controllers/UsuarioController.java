@@ -11,46 +11,98 @@ import java.util.List;
 public class UsuarioController {
 
 	private Usuario usuario;
-	private List<Usuario> usuarios = new ArrayList<>();
-
-	public Usuario crearUsuario(UsuarioDTO usuarioDTO) {
-		Usuario nuevoUsuario = new Usuario(usuarioDTO.getNombreUsuario(), usuarioDTO.getCorreo(), usuarioDTO.getPassword());
-		nuevoUsuario.setNombreUsuario(usuarioDTO.getNombreUsuario());
-		nuevoUsuario.setUbicacion(usuarioDTO.getUbicacion());
-
-		List<UsuarioDeporte> lista = new ArrayList<>();
-		for (Deporte d : usuarioDTO.getDeportes()) {
-			UsuarioDeporte ud = new UsuarioDeporte();
-			ud.setDeporte(d);
-			ud.setNivel(Nivel.INTERMEDIO);
-			ud.setJugador(nuevoUsuario);
-			lista.add(ud);
+	
+	public UsuarioDTO crearUsuario(UsuarioDTO usuarioDTO, List<Usuario> usuarios) {
+		
+		Usuario nuevoUsuario = new Usuario(
+		    usuarioDTO.getNombreUsuario(),
+		    usuarioDTO.getCorreo(),
+		    usuarioDTO.getPassword()
+		);
+		
+		if (usuarioDTO.getUbicacion() != null) {
+		    Ubicacion ubicacion = new Ubicacion();
+		    ubicacion.setLatitud(usuarioDTO.getUbicacion().getLatitud());
+		    ubicacion.setLongitud(usuarioDTO.getUbicacion().getLongitud());
+		    nuevoUsuario.setUbicacion(ubicacion);
 		}
-
+	
+		List<UsuarioDeporte> lista = new ArrayList<>();
+		for (UsuarioDeporteDTO dto : usuarioDTO.getDeportes()) {
+		    UsuarioDeporte ud = new UsuarioDeporte();
+		    ud.setNivel(dto.getNivel());
+	
+		    Deporte d = new Deporte();
+		    d.setNombre(dto.getDeporte().getNombre());
+		    d.setJugadoresMaximos(dto.getDeporte().getJugadoresMaximos());
+		    d.setJugadoresMinimos(dto.getDeporte().getJugadoresMinimos());
+	
+		    ud.setDeporte(d);
+		    ud.setJugador(nuevoUsuario);
+		    lista.add(ud);
+		}
+	
 		nuevoUsuario.setDeportes(lista);
 		nuevoUsuario.setPartidos(new ArrayList<>());
-
-		usuarios.add(nuevoUsuario);
+	
 		this.setUsuario(nuevoUsuario);
-		usuario.registrarse();
 
-		return nuevoUsuario;
+        	return nuevoUsuario.registrarse(usuarios);
+    	}
+	
+	public UsuarioDTO iniciarSesion(String nombre, String contrasena) {
+		        for (Usuario u : usuarios) {
+		            UsuarioDTO dto = u.login(nombre, contrasena);
+		            if (dto != null) {
+		                this.setUsuario(u);
+		                return dto;
+		            }
+		        }
+		        System.out.println("Usuario o contraseña incorrectos. Intente nuevamente.");
+	        return null;
+    	}
+
+	
+    public UsuarioDTO iniciarSesion(String nombre, String contrasena) {
+	for (Usuario u : usuarios) {
+	    UsuarioDTO dto = u.login(nombre, contrasena);
+	    if (dto != null) {
+		this.setUsuario(u);
+		return dto;
+	    }
 	}
+	System.out.println("Usuario o contraseña incorrectos. Intente nuevamente.");
+	return null;
+    }
 
-	public void iniciarSesion(String nombre, String contrasena) {
+    public UsuarioDTO cerrarSesion() {
+        if (usuario != null) {
+            return usuario.logout();
+        }
+        System.out.println("No hay sesión activa.");
+        return null;
+    }
 
-		boolean encontrado = false;
+    public List<PartidoDTO> consultarHistorial() {
+        if (usuario != null) {
+            return usuario.consultarHistorialPartidos();
+        }
+        System.out.println("No hay usuario logueado.");
+        return new ArrayList<>();
+    }
 
-		for (Usuario u: usuarios) {
-			if (usuario.login(nombre, contrasena)) {
-				encontrado = true;
-				this.setUsuario(u);
-				System.out.println("Login exitoso para el usuario: " + u.getNombreUsuario());
-			}
-		}
-		if (!encontrado)  {
-			System.out.println("Usuario o contrasena incorrectos. Intente nuevamente");
-		}
+    public PartidoDTO buscarPartido(UbicacionDTO ubicacionDTO) {
+        if (usuario != null && ubicacionDTO != null) {
+            Ubicacion ubicacion = new Ubicacion();
+            ubicacion.setLatitud(ubicacionDTO.getLatitud());
+            ubicacion.setLongitud(ubicacionDTO.getLongitud());
+            return usuario.buscarPartido(ubicacion);
+        }
+        System.out.println("Debe iniciar sesión y proporcionar una ubicación válida.");
+        return null;
+    }
 
-	}
+    public UsuarioDTO getUsuarioActual() {
+        return usuario != null ? usuario.toDTO() : null;
+    }
 }

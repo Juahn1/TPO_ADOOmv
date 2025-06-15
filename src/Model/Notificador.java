@@ -1,4 +1,6 @@
 package Model;
+import Adapter.INotificacionAdapter;
+
 
 public class Notificador {
     private INotificacionAdapter adapter;
@@ -8,6 +10,6 @@ public class Notificador {
     }
 
     public void notificar(Usuario usuario, String mensaje) {
-        adapter.enviar(usuario.getIdentificador(), mensaje);
+        adapter.enviar(usuario.getCorreo(), mensaje);
     }
 }

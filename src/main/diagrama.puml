@@ -1,0 +1,304 @@
+@startuml Sistema de Partidos TPO ADOO
+
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam handwritten false
+skinparam monochrome false
+skinparam packagePadding 10
+skinparam defaultFontSize 12
+skinparam defaultFontName Arial
+skinparam classBackgroundColor #FEFECE
+skinparam packageBackgroundColor #FAFAFA
+skinparam noteBackgroundColor #EFF5FB
+skinparam noteBorderColor #A9D0F5
+skinparam ArrowColor #454645
+skinparam stereotypeCBackgroundColor #ADD1B2
+skinparam stereotypeCBorderColor #A9A9A9
+
+left to right direction
+hide empty members
+
+' PACKAGES
+package "Model" #EEFFEE {
+  class Partido {
+    - id: int
+    - deporte: Deporte
+    - cantidadJugadoresRequeridos: int
+    - duracion: int
+    - nivelMaximo: Nivel
+    - nivelMinimo: Nivel
+    - ubicacion: Ubicacion
+    - estado: EstadoPartido
+    - jugadoresAnotados: List<Usuario>
+    - estrategiaEmparejamiento: EstrategiaEmparejamiento
+    - observadores: List<Notificador>
+    - organizador: Usuario
+    - fechaHora: LocalDateTime
+    - minPartidosRequeridos: int
+    + agregarJugador(jugador: Usuario): void
+    + eliminarJugador(jugador: Usuario): void
+    + cambiarEstado(nuevoEstado: EstadoPartido): void
+    + cancelarPartido(): void
+    + notificar(): void
+    + verificarEstadoActual(): void
+    + editarPartido(ubicacion: Ubicacion, duracion: int, fechaHora: LocalDateTime): void
+    + confirmarJugadores(): void
+    + agregarObservador(observador: Notificador): void
+    + eliminarObservador(observador: Notificador): void
+    + toDTO(): PartidoDTO
+  }
+
+  class Usuario {
+    - nombreUsuario: String
+    - correo: String
+    - password: String
+    - deportes: List<UsuarioDeporte>
+    - ubicacion: Ubicacion
+    - partidos: List<Partido>
+    - sesion: boolean
+    - cantidadPartidosJugados: int
+    + consultarHistorialPartidos(): List<PartidoDTO>
+    + buscarPartido(ubicacionDeseada: Ubicacion): PartidoDTO
+    + login(nombreUsuario: String, password: String): UsuarioDTO
+    + logout(): UsuarioDTO
+    + toDTO(): UsuarioDTO
+  }
+
+  class Ubicacion {
+    - ciudad: String
+    - direccion: String
+    - latitud: double
+    - longitud: double
+    + calcularDistancia(otra: Ubicacion): double
+    + toDTO(): UbicacionDTO
+  }
+
+  class Deporte {
+    - nombre: String
+    - jugadoresMaximos: int
+    - jugadoresMinimos: int
+  }
+
+  class UsuarioDeporte {
+    - nivel: Nivel
+    - deporte: Deporte
+    - jugador: Usuario
+  }
+
+  enum Nivel {
+    PRINCIPIANTE
+    INTERMEDIO
+    AVANZADO
+  }
+
+  class Notificador {
+    - adapter: INotificacionAdapter
+    + notificar(usuario: Usuario, mensaje: String): void
+  }
+
+  class Firebase {
+    + enviarNotificacion(usuario: Usuario): void
+    + enviarPush(destino: String, mensaje: String): void
+  }
+
+  class Mail {
+    + enviarCorreo(correo: String, contenido: String): void
+  }
+}
+
+package "Controllers" #F0F8FF {
+  class PartidoController {
+    - partidos: List<Partido>
+    - notificadores: List<Notificador>
+    - deportes: Map<String, Deporte>
+    + crearPartido(nombreDeporte: String, cantidadJugadores: int, duracion: int, ubicacionDTO: UbicacionDTO, organizador: Usuario, estrategia: String, fechaHora: LocalDateTime): PartidoDTO
+    + buscarPartidosPorUbicacion(ubicacionDTO: UbicacionDTO, distanciaMaxima: double): List<PartidoDTO>
+    + agregarJugadorAPartido(idPartido: String, jugador: Usuario): PartidoDTO
+    + eliminarJugadorDePartido(idPartido: String, jugador: Usuario): PartidoDTO
+    + confirmarPartido(idPartido: String): PartidoDTO
+    + cancelarPartido(idPartido: String): PartidoDTO
+    + obtenerTodosLosPartidos(): List<PartidoDTO>
+    + verificarEstadosPartidos(): void
+    + agregarNotificador(notificador: Notificador): void
+    - buscarDeporte(nombreDeporte: String): Deporte
+    - buscarPartido(idPartido: String): Partido
+    - generateUniqueId(): int
+  }
+
+  class UsuarioController {
+    - usuario: Usuario
+    - usuarios: List<Usuario>
+    + crearUsuario(usuarioDTO: UsuarioDTO): UsuarioDTO
+    + iniciarSesion(nombre: String, contrasena: String): UsuarioDTO
+    + cerrarSesion(): UsuarioDTO
+    + consultarHistorial(): List<PartidoDTO>
+    + buscarPartidosCercanos(ubicacionDTO: UbicacionDTO, distanciaMaxima: double): List<PartidoDTO>
+    + actualizarPerfil(datosActualizados: UsuarioDTO): UsuarioDTO
+    + getUsuarioActual(): UsuarioDTO
+    + agregarUsuarioAlSistema(usuario: Usuario): void
+  }
+}
+
+package "State" #FFEEEE {
+  interface EstadoPartido {
+    + agregarJugador(partido: Partido): void
+    + eliminarJugador(partido: Partido): void
+    + confirmarJugador(partido: Partido): void
+    + cancelarPartido(): void
+    + getNombreEstado(): String
+  }
+
+  together {
+    class EstadoBuscandoJugadores implements EstadoPartido
+    class EstadoPartidoArmado implements EstadoPartido
+    class EstadoPartidoConfirmado implements EstadoPartido {
+      + verificarInicio(partido: Partido, ahora: LocalDateTime): void
+    }
+    class EstadoPartidoEnJuego implements EstadoPartido {
+      + finalizarPartido(partido: Partido): void
+    }
+    class EstadoPartidoFinalizado implements EstadoPartido
+    class EstadoPartidoCancelado implements EstadoPartido
+  }
+}
+
+package "Strategy" #EEEEFF {
+  interface EstrategiaEmparejamiento {
+    + esCompatible(jugador: Usuario, partido: Partido): boolean
+    + emparejar(partido: Partido): void
+  }
+
+  together {
+    class EstrategiaEmparejamientoNivel implements EstrategiaEmparejamiento
+    class EstrategiaEmparejamientoHistorial implements EstrategiaEmparejamiento
+    class EstrategiaEmparejamientoUbicacion implements EstrategiaEmparejamiento {
+      - UMBRAL_KM: double
+    }
+  }
+}
+
+package "Adapter" #FFFEE0 {
+  interface INotificacionAdapter {
+    + enviar(destino: String, mensaje: String): void
+  }
+
+  together {
+    class FirebaseAdapter implements INotificacionAdapter {
+      - firebase: Firebase
+    }
+    class MailAdapter implements INotificacionAdapter {
+      - mailer: Mail
+    }
+  }
+}
+
+package "DTO" #F0F0F0 {
+  class PartidoDTO {
+    - id: String
+    - nombreDeporte: String
+    - cantidadJugadoresAnotados: int
+    - cantidadJugadoresRequeridos: int
+    - estado: String
+    - ubicacion: UbicacionDTO
+    - duracion: int
+    - fechaHora: String
+  }
+
+  class UsuarioDTO {
+    - nombreUsuario: String
+    - correo: String
+    - password: String
+    - ubicacion: UbicacionDTO
+    - deportes: List<UsuarioDeporteDTO>
+    - historial: List<PartidoDTO>
+    - sesion: boolean
+    - cantidadPartidosJugados: int
+  }
+
+  class DeporteDTO {
+    - nombre: String
+    - jugadoresMinimos: int
+    - jugadoresMaximos: int
+  }
+
+  class UbicacionDTO {
+    - latitud: double
+    - longitud: double
+    - direccion: String
+    - ciudad: String
+  }
+
+  class UsuarioDeporteDTO {
+    - nivel: Nivel
+    - deporte: DeporteDTO
+  }
+}
+
+' RELACIONES!!
+Partido o-- EstadoPartido
+Partido o-- EstrategiaEmparejamiento
+
+Partido "*" -- "1" Deporte
+Partido "*" -- "1" Ubicacion
+Partido "*" -- "*" Usuario : jugadoresAnotados
+Partido "*" -- "1" Usuario : organizador
+Usuario "1" -- "*" UsuarioDeporte
+UsuarioDeporte "*" -- "1" Deporte
+Usuario "1" -- "1" Ubicacion
+Partido "1" -- "*" Notificador : observadores
+Notificador "*" -- "1" Usuario
+
+Notificador o-- INotificacionAdapter
+FirebaseAdapter *-- Firebase
+MailAdapter *-- Mail
+
+PartidoController o-- Partido
+PartidoController o-- Notificador
+PartidoController o-- Deporte
+UsuarioController o-- Usuario
+
+PartidoController ..> PartidoDTO
+UsuarioController ..> UsuarioDTO
+Partido ..> PartidoDTO
+Usuario ..> UsuarioDTO
+Ubicacion ..> UbicacionDTO
+PartidoDTO ..> UbicacionDTO
+PartidoDTO ..> DeporteDTO
+PartidoDTO ..> UsuarioDTO
+UsuarioDTO ..> UbicacionDTO
+UsuarioDTO ..> UsuarioDeporteDTO
+UsuarioDTO ..> PartidoDTO
+UsuarioDeporteDTO ..> DeporteDTO
+
+' RELACIONES DEL NIVEL
+Partido ..> Nivel : nivelMinimo, nivelMaximo
+UsuarioDeporte *-- Nivel : nivel
+UsuarioDeporteDTO *-- Nivel : nivel
+
+' NOTAS PATRONES
+note "Patrón State:\nRepresenta los diferentes estados\ndel partido y su comportamiento" as StateNote
+StateNote .. EstadoPartido
+
+note "Patrón Strategy:\nDiferentes algoritmos de\nemparejamiento de jugadores" as StrategyNote
+StrategyNote .. EstrategiaEmparejamiento
+
+note "Patrón Adapter:\nAdapta diferentes mecanismos\nde notificación" as AdapterNote
+AdapterNote .. INotificacionAdapter
+
+note "Patrón Observer:\nPara notificación\nde eventos del partido" as ObserverNote
+ObserverNote .. Notificador
+
+' Posicionamiento y leyenda
+legend top
+  <b>Sistema de Partidos Deportivos
+  ==
+  <color:red>■</color> State Pattern
+  <color:blue>■</color> Strategy Pattern
+  <color:green>■</color> Adapter Pattern
+  <color:purple>■</color> Observer Pattern
+endlegend
+
+@enduml

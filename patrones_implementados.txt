@@ -1,0 +1,67 @@
+Que platrones implementamos?
+
+1. State. Para manejar el comportamiento del partido, segun sus diferentes estados.
+2. Strategy. Para definir diferentes implementaciones (estrategias) de emparejamiento de jugadores a un partido. Incluso pudiendo cambiarlas, en tiempo de ejecución.
+3. Adapter. Para poder adaptar diferentes formas de notificar, a una interfaz en comun. Ademas de brindar un serivicio, si es que esa forma de implementar esta en curso de desarrollo.
+4. Observer. Para notificar a los suscribres de ese observer (los jugadores) de los cambios que ocurren en el partido.
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+1. Patrón State
+El patrón State se implementó para modelar los diferentes estados de un partido y encapsular el comportamiento asociado a cada uno.
+Estado Partido, es la interfaz que define el contrato de los métodos comunes que cada estado concreto deberá implementar
+
+Estados (Clases) Concretos:
+-EstadoBuscandoJugadores: Representa un partido que necesita más jugadores.
+-EstadoPartidoConfirmado: Representa un partido que ya tiene todos los jugadores confirmados.
+-EstadoPartidoArmado: Representa un partido que tiene todos los jugadores anotados pero no confirmados.
+-EstadoPartidoEnJuego: Representa un partido que ha comenzado.
+-EstadoPartidoFinalizado: Representa un partido que ha finalizado exitosamente.
+-EstadoPartidoCancelado: Representa un partido que ha sido cancelado.
+
+Para que lo hicimos?
+-Gracias a este patron, podemos manejar cada comportamiento de cada partido segun el estado, sin logicas complejas, switchs o condicionales confusos.
+-Respetamos el principio SOLID de responsabilidad única, ya que cada estado maneja su propio comportamiento.
+-Respetamos el principio de Open/Close, ya que si surge un nuevo estado, creamos la clase concreta, implementamos la interfaz y no neesitamos modificar código.
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+2. Patrón Strategy
+
+El patrón Strategy se implementó para definir diferentes algoritmos de emparejamiento de jugadores a un partido.
+EstrategiaEmparejamiento es la interfaz que define el contrato de los métodos comunes que cada estrategia concreta deberá implementar.
+
+Implementación de Estrategias (Clases) Concretas:
+-EstrategiaEmparejamientoNivel: Empareja jugadores según su nivel de habilidad.
+-EstrategiaEmparejamientoHistorial: Empareja jugadoresccording a la cantidad de partidos jugados.
+-EstrategiaEmparejamientoUbicacion: Empareja jugadoresccording a su proximidad geográfica.
+
+Para que lo hicimos?
+-Gracias a este patron, podemos manejar diferentes estrategias de emparejamiento de jugadores a un partido, sin logicas complejas, switchs o condicionales confusos. Además, podemos cambiar la estrategia en tiempo de ejecución.
+-Respetamos el principio de Open/Close, ya que si surge una nueva estrategia, creamos la clase concreta, implementamos la interfaz y no neesitamos modificar código.
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+3. Patrón Adapter
+
+El patrón Adapter se implementó para adaptar diferentes formas de notificación, a una interfaz común, permitiendo tener cierta flexibilidad al momento de notificar a los jugadores sobre cambios en el partido.
+INotificacionAdapter es la interfaz que define el contrato de los métodos comunes que cada adaptador concreto deberá implementar.
+
+Implementación de Adaptadores (Clases) Concretos:
+-FirebaseAdapter: Adapta el servicio Firebase para enviar notificaciones. Cumpliendo con la interfaz.
+-MailAdapter: Adapta el servicio de mails, para enviar notificaciones. Cumpliendo con la interfaz.
+
+Para que lo hicimos?
+- Gracias a este patrón, podemos utilizar diferentes servicios de notificación a través de una interfaz común.
+- Podemos incorporar nuevos servicios facilmente, respetando Open/Close
+- Podemos otorgar el modelo que deben seguir, en caso de descoordinacion de equipos y seguir trabajando.
+- Desacopla el sistema de notificación del resto de la aplicación.
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+4. Patrón Observer
+
+Observer es un patrón de diseño que permite a un objeto (el sujeto) notificar a otros objetos (los observadores) sobre cambios en su estado. En este caso, se utiliza para notificar a los jugadores sobre cambios en el estado del partido.
+El Observable, es el Partido, quien mantiene una lista de observadores y los notifica cuando su estado cambia.
+Los observadores, son los notificadores, quienes reciben las actualizaciones, y avisan a los jugadores.
+
+Para que lo hicimos?
+- Los jugadores son notificados automáticomente cuando cambia el estado del partido.
+- Desacopla la logica de negocio, la de notificacion y la del partido.

@@ -1,6 +1,4 @@
 import Model.*;
-import State.*;
-import Strategy.*;
 import Adapter.*;
 import Controllers.*;
 import DTO.*;

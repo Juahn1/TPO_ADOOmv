@@ -4,7 +4,7 @@ import Model.Partido;
 
 import java.time.LocalDateTime;
 
-public class EstadoPartidoConfirmado extends EstadoPartido {
+public class EstadoPartidoConfirmado implements EstadoPartido {
 
 	@Override
 	public void agregarJugador(Partido partido) {

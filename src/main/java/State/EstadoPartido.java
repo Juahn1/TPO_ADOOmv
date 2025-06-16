@@ -2,13 +2,13 @@ package State;
 
 import Model.Partido;
 
-public abstract class EstadoPartido {
-	public abstract void agregarJugador(Partido partido);
-	public abstract void eliminarJugador(Partido partido);
-	public abstract void confirmarJugador(Partido partido);
-	public abstract void cancelarPartido();
+public interface EstadoPartido {
+	void agregarJugador(Partido partido);
+	void eliminarJugador(Partido partido);
+	void confirmarJugador(Partido partido);
+	void cancelarPartido();
 
-	public String getNombreEstado() {
+	default String getNombreEstado() {
 		return this.getClass().getSimpleName();
 	}
 }

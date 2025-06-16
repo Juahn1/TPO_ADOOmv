@@ -2,7 +2,7 @@ package State;
 
 import Model.Partido;
 
-public class EstadoPartidoCancelado extends EstadoPartido {
+public class EstadoPartidoCancelado implements EstadoPartido {
 
 	@Override
 	public void agregarJugador(Partido partido) {

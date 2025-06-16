@@ -2,6 +2,11 @@ package Model;
 
 import Strategy.EstrategiaEmparejamiento;
 import DTO.PartidoDTO;
+import DTO.UbicacionDTO;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +18,8 @@ import State.EstadoPartidoEnJuego;
 import State.EstadoPartidoFinalizado;
 import State.EstadoPartidoCancelado;
 
+@Getter
+@Setter
 public class Partido {
 	private int id;
 	private Deporte deporte;
@@ -26,7 +33,8 @@ public class Partido {
 	private EstrategiaEmparejamiento estrategiaEmparejamiento;
 	private List<Notificador> observadores;
 	private Usuario organizador;
-	private LocalDateTime fechaHora; // Fecha y hora del encuentro
+	private LocalDateTime fechaHora;
+	private int minPartidosRequeridos; // Para la estrategia de emparejamiento por historial
 
 	public Partido(Ubicacion ubicacion, Deporte deporte, int cantidadJugadoresRequeridos,
                   int duracion, Usuario organizador, EstrategiaEmparejamiento estrategia,
@@ -42,6 +50,9 @@ public class Partido {
 		this.observadores = new ArrayList<>();
 		this.fechaHora = fechaHora;
 		this.jugadoresAnotados.add(organizador);
+		this.nivelMinimo = Nivel.PRINCIPIANTE; // Por defecto
+		this.nivelMaximo = Nivel.AVANZADO; // Por defecto
+		this.minPartidosRequeridos = 0; // Por defecto
 	}
 
 	// métodos
@@ -126,52 +137,16 @@ public class Partido {
 		observadores.remove(observador);
 	}
 
-	// Setters y getters
-	public void setEstrategia(EstrategiaEmparejamiento estrategia) {
-		this.estrategiaEmparejamiento = estrategia;
-	}
-
-	public void setNivelMinimo(Nivel nivelMinimo) {
-		this.nivelMinimo = nivelMinimo;
-	}
-
-	public void setNivelMaximo(Nivel nivelMaximo) {
-		this.nivelMaximo = nivelMaximo;
-	}
-
-	public Ubicacion getUbicacion() {
-		return ubicacion;
-	}
-
-	public EstadoPartido getEstado() {
-		return estado;
-	}
-
-	public List<Usuario> getJugadoresAnotados() {
-		return jugadoresAnotados;
-	}
-
-	public int getCantidadJugadoresRequeridos() {
-		return cantidadJugadoresRequeridos;
-	}
-
-	public LocalDateTime getFechaHora() {
-		return fechaHora;
-	}
-
-	public void setFechaHora(LocalDateTime fechaHora) {
-		this.fechaHora = fechaHora;
-	}
-
 	public PartidoDTO toDTO() {
 		PartidoDTO dto = new PartidoDTO();
+		dto.setId(String.valueOf(this.id));
 		dto.setNombreDeporte(this.deporte.getNombre());
 		dto.setEstado(this.estado.getNombreEstado());
-		dto.setUbicacion(this.ubicacion.toDTO());
-		// Añadir la nueva información al DTO
+		dto.setUbicacion(this.ubicacion != null ? this.ubicacion.toDTO() : null);
 		dto.setFechaHora(this.fechaHora.toString());
 		dto.setCantidadJugadoresAnotados(this.jugadoresAnotados.size());
 		dto.setCantidadJugadoresRequeridos(this.cantidadJugadoresRequeridos);
+		dto.setDuracion(this.duracion);
 		return dto;
 	}
 }

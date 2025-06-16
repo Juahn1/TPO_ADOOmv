@@ -1,5 +1,4 @@
 package Adapter;
-
 import Model.Mail;
 
 public class MailAdapter implements INotificacionAdapter {

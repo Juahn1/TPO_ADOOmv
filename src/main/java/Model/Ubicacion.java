@@ -1,6 +1,7 @@
 package Model;
 
 import lombok.Data;
+import DTO.UbicacionDTO;
 
 @Data
 public class Ubicacion {
@@ -21,5 +22,9 @@ public class Ubicacion {
 		double dx = this.latitud - otraUbicacion.latitud;
 		double dy = this.longitud - otraUbicacion.longitud;
 		return Math.sqrt(dx * dx + dy * dy);
+	}
+
+	public UbicacionDTO toDTO() {
+		return new UbicacionDTO(this.latitud, this.longitud, this.direccion, this.ciudad);
 	}
 }

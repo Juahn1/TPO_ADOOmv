@@ -1,16 +1,21 @@
 package DTO;
 
-import Model.Deporte;
-import Model.Ubicacion;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import Model.Nivel;
 import java.util.List;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class UsuarioDTO {
     private String nombreUsuario;
-    private Ubicacion ubicacion;
     private String correo;
     private String password;
-    private List<Deporte> deportes;
+    private UbicacionDTO ubicacion;
+    private List<UsuarioDeporteDTO> deportes;
+    private List<PartidoDTO> historial;
     private boolean sesion;
+    private int cantidadPartidosJugados;
 }

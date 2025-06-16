@@ -21,9 +21,9 @@ skinparam stereotypeCBorderColor #A9A9A9
 left to right direction
 hide empty members
 
-' PACKAGES
 package "Model" #EEFFEE {
   class Partido {
+  // Variables
     - id: int
     - deporte: Deporte
     - cantidadJugadoresRequeridos: int
@@ -38,6 +38,8 @@ package "Model" #EEFFEE {
     - organizador: Usuario
     - fechaHora: LocalDateTime
     - minPartidosRequeridos: int
+
+    // Métodos
     + agregarJugador(jugador: Usuario): void
     + eliminarJugador(jugador: Usuario): void
     + cambiarEstado(nuevoEstado: EstadoPartido): void
@@ -114,7 +116,7 @@ package "Controllers" #F0F8FF {
     - partidos: List<Partido>
     - notificadores: List<Notificador>
     - deportes: Map<String, Deporte>
-    + crearPartido(nombreDeporte: String, cantidadJugadores: int, duracion: int, ubicacionDTO: UbicacionDTO, organizador: Usuario, estrategia: String, fechaHora: LocalDateTime): PartidoDTO
+    + crearPartido(PartidoDTO partido): PartidoDTO
     + buscarPartidosPorUbicacion(ubicacionDTO: UbicacionDTO, distanciaMaxima: double): List<PartidoDTO>
     + agregarJugadorAPartido(idPartido: String, jugador: Usuario): PartidoDTO
     + eliminarJugadorDePartido(idPartido: String, jugador: Usuario): PartidoDTO
@@ -273,23 +275,9 @@ UsuarioDTO ..> UsuarioDeporteDTO
 UsuarioDTO ..> PartidoDTO
 UsuarioDeporteDTO ..> DeporteDTO
 
-' RELACIONES DEL NIVEL
 Partido ..> Nivel : nivelMinimo, nivelMaximo
 UsuarioDeporte *-- Nivel : nivel
 UsuarioDeporteDTO *-- Nivel : nivel
-
-' NOTAS PATRONES
-note "Patrón State:\nRepresenta los diferentes estados\ndel partido y su comportamiento" as StateNote
-StateNote .. EstadoPartido
-
-note "Patrón Strategy:\nDiferentes algoritmos de\nemparejamiento de jugadores" as StrategyNote
-StrategyNote .. EstrategiaEmparejamiento
-
-note "Patrón Adapter:\nAdapta diferentes mecanismos\nde notificación" as AdapterNote
-AdapterNote .. INotificacionAdapter
-
-note "Patrón Observer:\nPara notificación\nde eventos del partido" as ObserverNote
-ObserverNote .. Notificador
 
 ' Posicionamiento y leyenda
 legend top

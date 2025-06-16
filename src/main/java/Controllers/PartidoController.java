@@ -3,11 +3,9 @@ package Controllers;
 import lombok.Data;
 import Model.*;
 import Strategy.*;
-import DTO.PartidoDTO;
-import DTO.UbicacionDTO;
+import DTO.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -41,6 +39,7 @@ public class PartidoController {
 			return null;
 		}
 
+
 		EstrategiaEmparejamiento estrategiaEmparejamiento;
 		switch (estrategia.toLowerCase()) {
 			case "nivel":
@@ -54,7 +53,6 @@ public class PartidoController {
 				break;
 			default:
 				estrategiaEmparejamiento = new EstrategiaEmparejamientoNivel();
-				// Por defecto, la estrategia que se designó, es "por nivel".
 		}
 
 		Partido partido = new Partido(

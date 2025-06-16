@@ -9,7 +9,7 @@ public class EstrategiaEmparejamientoNivel implements EstrategiaEmparejamiento {
 
 	@Override
 	public boolean esCompatible(Usuario jugador, Partido partido) {
-		Nivel nivelJugador = Nivel.PRINCIPIANTE; // Nivel por defecto si no tiene el deporte
+		Nivel nivelJugador = Nivel.AVANZADO; // Nivel por defecto si no tiene el deporte
 
 		if (jugador.getDeportes() != null) {
 			for (UsuarioDeporte ud : jugador.getDeportes()) {
@@ -25,12 +25,5 @@ public class EstrategiaEmparejamientoNivel implements EstrategiaEmparejamiento {
 
 		return (nivelJugador.ordinal() >= nivelMinimo.ordinal() &&
 				nivelJugador.ordinal() <= nivelMaximo.ordinal());
-	}
-
-	@Override
-	public void emparejar(Partido partido) {
-		System.out.println("Emparejando jugadores por nivel de habilidad para el partido: " + partido.getId());
-		// Implementación del algoritmo de emparejamiento basado en nivel
-		// Por ejemplo: buscar jugadores con niveles similares para balancear equipos
 	}
 }

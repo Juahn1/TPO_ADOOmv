@@ -1,4 +1,4 @@
-Que platrones implementamos?
+Que patrones implementamos?
 
 1. State. Para manejar el comportamiento del partido, segun sus diferentes estados.
 2. Strategy. Para definir diferentes implementaciones (estrategias) de emparejamiento de jugadores a un partido. Incluso pudiendo cambiarlas, en tiempo de ejecución.

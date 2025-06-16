@@ -15,9 +15,4 @@ public class EstrategiaEmparejamientoUbicacion implements EstrategiaEmparejamien
 
 		return distanciaEnKm <= UMBRAL_KM;
 	}
-
-	@Override
-	public void emparejar(Partido partido) {
-		System.out.println("Emparejando jugadores por cercanía geográfica para el partido: " + partido.getId());
-	}
 }

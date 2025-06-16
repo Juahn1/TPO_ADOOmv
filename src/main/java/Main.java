@@ -281,6 +281,10 @@ public class Main {
 
         String estrategia;
         switch (estrategiaSeleccionada) {
+            case 1:
+                estrategia = "habilidad";
+                //PartidoController.estrategiaNivel = true;
+                break;
             case 2:
                 estrategia = "ubicacion";
                 break;

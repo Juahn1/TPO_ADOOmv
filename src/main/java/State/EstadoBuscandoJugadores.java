@@ -1,23 +1,24 @@
-package Model;
+package State;
+import Model.Partido;
 
 public class EstadoBuscandoJugadores extends EstadoPartido {
 
     @Override
-    public void agregarJugador(Partido contexto) {
+    public void agregarJugador(Partido partido) {
         System.out.println("Jugador agregado a partido que busca jugadores.");
-        if (contexto.getJugadoresAnotados().size() >= contexto.getCantidadJugadoresRequeridos()) {
-            contexto.cambiarEstado(new EstadoPartidoArmado());
+        if (partido.getJugadoresAnotados().size() >= partido.getCantidadJugadoresRequeridos()) {
+            partido.cambiarEstado(new EstadoPartidoArmado());
             System.out.println("El partido completó sus jugadores y pasa a partido armado!");
         }
     }
 
     @Override
-    public void eliminarJugador(Partido contexto) {
+    public void eliminarJugador(Partido partido) {
         System.out.println("Jugador eliminado del partido en búsqueda.");
     }
 
     @Override
-    public void confirmarJugador(Partido contexto) {
+    public void confirmarJugador(Partido partido) {
         System.out.println("El jugador ha confirmado pero el partido aún está en búsqueda de jugadores.");
     }
 

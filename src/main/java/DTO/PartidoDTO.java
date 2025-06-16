@@ -1,4 +1,4 @@
-package Model;
+package DTO;
 
 public class PartidoDTO {
 	private Deporte deporte;

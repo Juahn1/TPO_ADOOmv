@@ -1,7 +1,5 @@
 import Model.*;
-import Model.EstadoPartidoConfirmado;
-import Model.EstadoPartidoEnJuego;
-import Model.EstadoPartidoFinalizado;
+import State.*;
 import Strategy.*;
 import State.*;
 import Adapter.*;

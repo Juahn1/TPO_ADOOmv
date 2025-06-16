@@ -1,4 +1,4 @@
-package Model;
+package Adapter;
 
 public class FirebaseAdapter implements INotificacionAdapter {
     private Firebase firebase;

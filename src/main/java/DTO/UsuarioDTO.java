@@ -1,4 +1,4 @@
-package dtos;
+package DTO;
 
 import Model.Deporte;
 import Model.Ubicacion;

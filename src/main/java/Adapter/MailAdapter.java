@@ -1,7 +1,5 @@
 package Adapter;
 
-import Model.INotificacionAdapter;
-
 public class MailAdapter implements INotificacionAdapter {
 
     @Override

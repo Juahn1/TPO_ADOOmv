@@ -34,7 +34,7 @@ public class Partido {
 	private List<Notificador> observadores;
 	private Usuario organizador;
 	private LocalDateTime fechaHora;
-	private int minPartidosRequeridos; // Para la estrategia de emparejamiento por historial
+	private int minPartidosRequeridos;
 
 	public Partido(Ubicacion ubicacion, Deporte deporte, int cantidadJugadoresRequeridos,
                   int duracion, Usuario organizador, EstrategiaEmparejamiento estrategia,
@@ -50,17 +50,14 @@ public class Partido {
 		this.observadores = new ArrayList<>();
 		this.fechaHora = fechaHora;
 		this.jugadoresAnotados.add(organizador);
-		this.nivelMinimo = Nivel.PRINCIPIANTE; // Por defecto
-		this.nivelMaximo = Nivel.AVANZADO; // Por defecto
-		this.minPartidosRequeridos = 0; // Por defecto
+		this.nivelMinimo = Nivel.PRINCIPIANTE;
+		this.nivelMaximo = Nivel.AVANZADO;
+		this.minPartidosRequeridos = 0;
 	}
-
-	// métodos
 	public void agregarJugador(Usuario jugador) {
-		// Verificar si el jugador ya está anotado
 		if (!jugadoresAnotados.contains(jugador)) {
 			jugadoresAnotados.add(jugador);
-			estado.agregarJugador(this); // Delegar al estado actual
+			estado.agregarJugador(this);
 		} else {
 			System.out.println("El jugador ya está anotado en este partido.");
 		}
@@ -69,7 +66,7 @@ public class Partido {
 	public void eliminarJugador(Usuario jugador) {
 		if (jugadoresAnotados.contains(jugador)) {
 			jugadoresAnotados.remove(jugador);
-			estado.eliminarJugador(this); // Delegar al estado actual
+			estado.eliminarJugador(this);
 		} else {
 			System.out.println("El jugador no está anotado en este partido.");
 		}
@@ -77,12 +74,12 @@ public class Partido {
 
 	public void cambiarEstado(EstadoPartido nuevoEstado) {
 		this.estado = nuevoEstado;
-		this.notificar(); // Notificar a los observadores del cambio de estado
+		this.notificar();
 	}
 
 	public void cancelarPartido() {
 		this.estado = new EstadoPartidoCancelado();
-		this.notificar(); // Notificar la cancelación
+		this.notificar();
 	}
 
 	public void notificar() {
@@ -91,7 +88,6 @@ public class Partido {
                     ". Estado: " + estado.getNombreEstado();
 
 		for (Notificador n : observadores) {
-			// Notificar a todos los jugadores anotados
 			for (Usuario jugador : jugadoresAnotados) {
 				n.notificar(jugador, mensaje);
 			}
@@ -104,16 +100,15 @@ public class Partido {
 		this.fechaHora = fechaHora;
 	}
 
-	// Verificar y actualizar el estado del partido según la fecha/hora actual
 	public void verificarEstadoActual() {
 		LocalDateTime ahora = LocalDateTime.now();
 
-		// Si llegó la hora del partido y está confirmado, pasar a "En juego"
+		// Si llegó la hora del partido y está confirmado, pasará al estado "En juego"
 		if (ahora.isAfter(fechaHora) && estado instanceof EstadoPartidoConfirmado) {
 			cambiarEstado(new EstadoPartidoEnJuego());
 		}
 
-		// Si terminó el tiempo de juego y está en juego, pasar a "Finalizado"
+		// Si terminó el partido, pasará al estado "Finalizado"
 		if (estado instanceof EstadoPartidoEnJuego &&
 			ahora.isAfter(fechaHora.plusMinutes(duracion))) {
 			cambiarEstado(new EstadoPartidoFinalizado());
@@ -126,7 +121,6 @@ public class Partido {
 		}
 	}
 
-	// Método para agregar observadores (notificadores)
 	public void agregarObservador(Notificador observador) {
 		if (!observadores.contains(observador)) {
 			observadores.add(observador);

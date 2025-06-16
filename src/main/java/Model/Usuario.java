@@ -15,7 +15,7 @@ public class Usuario {
 	private Ubicacion ubicacion;
 	private List<Partido> partidos;
 	private boolean sesion;
-	private int cantidadPartidosJugados; // Para la estrategia de emparejamiento por historial
+	private int cantidadPartidosJugados; // Esta variable solo se usa para la estrategia de emparejar por historial de partidos.
 
 	public Usuario(String nombreUsuario, String correo, String password) {
 		this.nombreUsuario = nombreUsuario;
@@ -56,7 +56,7 @@ public class Usuario {
 	   }
 
 	public UsuarioDTO logout() {
-		if (this.sesion) { // Corregido: se eliminó el .equals(true) para un primitivo boolean
+		if (this.sesion) {
 			this.sesion = false;
 			System.out.println("Sesion cerrada: " + nombreUsuario);
 			return this.toDTO();
@@ -67,22 +67,20 @@ public class Usuario {
 	public UsuarioDTO toDTO() {
         	UsuarioDTO dto = new UsuarioDTO();
         	dto.setNombreUsuario(this.nombreUsuario);
-        	dto.setCorreo(this.correo); // Añadido: faltaba este campo
-		dto.setSesion(this.sesion); // Añadido: faltaba este campo
-		dto.setCantidadPartidosJugados(this.cantidadPartidosJugados); // Añadido: faltaba este campo
+        	dto.setCorreo(this.correo);
+		dto.setSesion(this.sesion);
+		dto.setCantidadPartidosJugados(this.cantidadPartidosJugados);
         	dto.setUbicacion(this.ubicacion != null ? this.ubicacion.toDTO() : null);
 
-		// Verificamos primero si deportes no es null
+
 		if (this.deportes != null) {
 			List<UsuarioDeporteDTO> deportesDTO = new ArrayList<>();
-			// Iteramos manualmente en lugar de usar stream para evitar problemas si toDTO() no existe
 			for (UsuarioDeporte ud : this.deportes) {
 				deportesDTO.add(convertirUsuarioDeporteADTO(ud));
 			}
 			dto.setDeportes(deportesDTO);
 		}
 
-		// Convertimos partidos a DTO
 		if (this.partidos != null) {
 			dto.setHistorial(this.partidos.stream()
 				.map(Partido::toDTO)
@@ -91,12 +89,9 @@ public class Usuario {
         	return dto;
     }
 
-	// Método auxiliar para convertir UsuarioDeporte a DTO
 	private UsuarioDeporteDTO convertirUsuarioDeporteADTO(UsuarioDeporte ud) {
 		UsuarioDeporteDTO dto = new UsuarioDeporteDTO();
 		dto.setNivel(ud.getNivel());
-
-		// Crear el DTO del deporte
 		DeporteDTO deporteDTO = new DeporteDTO();
 		deporteDTO.setNombre(ud.getDeporte().getNombre());
 		deporteDTO.setJugadoresMinimos(ud.getDeporte().getJugadoresMinimos());

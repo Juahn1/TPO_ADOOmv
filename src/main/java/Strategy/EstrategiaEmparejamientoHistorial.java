@@ -8,7 +8,6 @@ public class EstrategiaEmparejamientoHistorial implements EstrategiaEmparejamien
 	@Override
 	public boolean esCompatible(Usuario jugador, Partido partido) {
 		int historial = jugador.getCantidadPartidosJugados();
-		// Reglas hipotéticas: mínimo partidos requeridos
 		return historial >= partido.getMinPartidosRequeridos();
 	}
 	

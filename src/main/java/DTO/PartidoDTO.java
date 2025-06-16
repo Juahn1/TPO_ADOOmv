@@ -17,7 +17,6 @@ public class PartidoDTO {
 	private int duracion;
 	private String fechaHora;
 
-	// Constructor para crear un nuevo partido
 	public PartidoDTO(String id, Deporte deporte, int cantidadJugadoresRequeridos, int duracion, UbicacionDTO ubicacion, String fechaHora) {
 		this.id = id;
 		this.nombreDeporte = deporte.getNombre();

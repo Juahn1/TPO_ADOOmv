@@ -9,7 +9,7 @@ public class EstadoBuscandoJugadores implements EstadoPartido {
         if (partido.getJugadoresAnotados().size() >= partido.getCantidadJugadoresRequeridos()) {
             partido.cambiarEstado(new EstadoPartidoArmado());
             System.out.println("El partido completó sus jugadores y pasa a partido armado!");
-            partido.notificar(); // Notificar el cambio de estado
+            partido.notificar();
         }
     }
 

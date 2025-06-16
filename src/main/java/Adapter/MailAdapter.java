@@ -10,7 +10,6 @@ public class MailAdapter implements INotificacionAdapter {
 
     @Override
     public void enviar(String destinatario, String mensaje) {
-        // Delegamos el envío al objeto Mail
         mailer.enviarCorreo(destinatario, mensaje);
     }
 }

@@ -3,37 +3,33 @@ package Controllers;
 import Model.*;
 import DTO.*;
 import lombok.Data;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 @Data
 public class UsuarioController {
 
-    private Usuario usuario; // Usuario actualmente logueado
-    private final List<Usuario> usuarios; // Lista de usuarios recibida desde el Main
+    private Usuario usuario;
+    private final List<Usuario> usuarios;
 
     public UsuarioController(List<Usuario> usuarios) {
         this.usuarios = usuarios;
     }
 
     public UsuarioDTO crearUsuario(UsuarioDTO usuarioDTO) {
-        // Verificar si el usuario ya existe
         if (usuarios.stream().anyMatch(u -> u.getNombreUsuario().equals(usuarioDTO.getNombreUsuario()) ||
                                         u.getCorreo().equals(usuarioDTO.getCorreo()))) {
             System.out.println("El nombre de usuario o correo ya están en uso.");
             return null;
         }
 
-        // Crear el nuevo usuario
         Usuario nuevoUsuario = new Usuario(
             usuarioDTO.getNombreUsuario(),
             usuarioDTO.getCorreo(),
             usuarioDTO.getPassword()
         );
 
-        // Añadir ubicación si existe
         if (usuarioDTO.getUbicacion() != null) {
             Ubicacion ubicacion = new Ubicacion(
                 usuarioDTO.getUbicacion().getCiudad(),
@@ -44,7 +40,6 @@ public class UsuarioController {
             nuevoUsuario.setUbicacion(ubicacion);
         }
 
-        // Añadir deportes si existen
         if (usuarioDTO.getDeportes() != null) {
             List<UsuarioDeporte> listaDeportes = new ArrayList<>();
             for (UsuarioDeporteDTO dto : usuarioDTO.getDeportes()) {
@@ -63,15 +58,9 @@ public class UsuarioController {
             }
             nuevoUsuario.setDeportes(listaDeportes);
         }
-
-        // Inicializar la lista de partidos vacía
         nuevoUsuario.setPartidos(new ArrayList<>());
-
-        // Añadir usuario a la lista
         usuarios.add(nuevoUsuario);
         System.out.println("Usuario registrado: " + nuevoUsuario.getNombreUsuario());
-
-        // Establecer este usuario como el usuario activo (opcional)
         this.setUsuario(nuevoUsuario);
 
         return nuevoUsuario.toDTO();
@@ -80,7 +69,6 @@ public class UsuarioController {
     public UsuarioDTO iniciarSesion(String nombre, String contrasena) {
         for (Usuario u : usuarios) {
             if (u.getNombreUsuario().equals(nombre) && u.getPassword().equals(contrasena)) {
-                // La validación la hace el controlador, no el modelo
                 u.setSesion(true);
                 this.setUsuario(u);
                 System.out.println("Login exitoso para el usuario: " + nombre);
@@ -93,7 +81,6 @@ public class UsuarioController {
 
     public UsuarioDTO cerrarSesion() {
         if (usuario != null && usuario.isSesion()) {
-            // La lógica de cerrar sesión la maneja el controlador
             usuario.setSesion(false);
             System.out.println("Sesión cerrada para: " + usuario.getNombreUsuario());
             UsuarioDTO dto = usuario.toDTO();
@@ -113,8 +100,6 @@ public class UsuarioController {
     }
 
     public List<PartidoDTO> buscarPartidosCercanos(UbicacionDTO ubicacionDTO, double distanciaMaxima) {
-        // Este método requeriría acceso al PartidoController
-        // Por ahora devolvemos una lista vacía
         return new ArrayList<>();
     }
 
@@ -145,7 +130,6 @@ public class UsuarioController {
         return usuario != null ? usuario.toDTO() : null;
     }
 
-    // Método para pruebas o precarga de usuarios
     public void agregarUsuarioAlSistema(Usuario usuario) {
         if (!usuarios.contains(usuario)) {
             usuarios.add(usuario);

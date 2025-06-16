@@ -40,10 +40,7 @@ public class EstadoPartidoArmado implements EstadoPartido {
 		System.out.println("Partido armado ha sido cancelado. Que bajon");
 	}
 
-	// Método auxiliar para verificar si un jugador confirmó
 	private boolean jugadorConfirmado(Usuario jugador) {
-		// Implementación básica - en una aplicación real esto estaría vinculado
-		// a alguna propiedad del usuario o a una tabla de confirmaciones
-		return true; // Por simplicidad, asumimos todos confirmados
+		return true; // Para hacerlo simple, "asumo" que estan todos confirmados
 	}
 }

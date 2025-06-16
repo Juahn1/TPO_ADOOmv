@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.Scanner;
 
 public class Main {
-    // Simulación del contexto global de la aplicación (como un "singleton" del sistema)
     private static List<Usuario> usuarios = new ArrayList<>();
     private static List<Partido> partidos = new ArrayList<>();
     private static List<Notificador> notificadores = new ArrayList<>();
@@ -22,11 +21,7 @@ public class Main {
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-
-        // Inicializar datos del sistema
         inicializarDatos();
-
-        // Inicializar controladores pasándoles las referencias a las listas
         UsuarioController usuarioController = new UsuarioController(usuarios);
         PartidoController partidoController = new PartidoController(partidos, notificadores, mapDeportes);
 
@@ -36,15 +31,15 @@ public class Main {
             int opcion = obtenerOpcionUsuario(scanner);
 
             switch (opcion) {
-                case 1: // Registrar usuario
+                case 1:
                     registrarUsuario(scanner, usuarioController);
                     break;
 
-                case 2: // Iniciar sesión
+                case 2:
                     iniciarSesion(scanner, usuarioController);
                     break;
 
-                case 3: // Ver funcionalidades de usuario logueado
+                case 3:
                     if (usuarioController.getUsuario() == null) {
                         System.out.println("Debe iniciar sesión primero.");
                     } else {
@@ -52,7 +47,7 @@ public class Main {
                     }
                     break;
 
-                case 0: // Salir
+                case 0:
                     salir = true;
                     System.out.println("¡Gracias por usar el sistema de gestión de partidos!");
                     break;
@@ -63,37 +58,22 @@ public class Main {
         }
         scanner.close();
     }
-
-    /**
-     * Inicializa datos precargados para el sistema
-     */
     private static void inicializarDatos() {
-        // Crear deportes predefinidos y almacenarlos en el mapa
         crearDeportesDisponibles();
 
-        // Inicializar adaptadores para notificaciones (Patrón Adapter)
         Firebase firebase = new Firebase();
         Mail mail = new Mail();
         INotificacionAdapter firebaseAdapter = new FirebaseAdapter(firebase);
         INotificacionAdapter mailAdapter = new MailAdapter(mail);
 
-        // Crear notificadores (Patrón Observer) y añadirlos a la lista
         Notificador notificadorPush = new Notificador(firebaseAdapter);
         Notificador notificadorMail = new Notificador(mailAdapter);
         notificadores.add(notificadorPush);
         notificadores.add(notificadorMail);
-
-        // Si se necesita, se pueden precargar algunos usuarios
-        Usuario admin = new Usuario("admin", "admin@sistema.com", "admin123");
-        usuarios.add(admin);
-
-        // También se podrían precargar algunos partidos de ejemplo
     }
 
-    /**
-     * Crea los deportes disponibles en el sistema y los almacena en un mapa
-     */
     private static void crearDeportesDisponibles() {
+        // Acá, crea los deportes disponibles en el sistema, para que los usuarios los puedan seleccionar.
         List<Deporte> listaDeportes = new ArrayList<>();
         listaDeportes.add(new Deporte("Fútbol", 5, 11));
         listaDeportes.add(new Deporte("Básquet", 5, 5));
@@ -101,13 +81,13 @@ public class Main {
         listaDeportes.add(new Deporte("Tenis", 2, 4));
         listaDeportes.add(new Deporte("Pádel", 2, 4));
 
-        // Convertir la lista a un mapa para acceso eficiente
         for (Deporte deporte : listaDeportes) {
             mapDeportes.put(deporte.getNombre(), deporte);
         }
     }
 
-    // Método para mostrar el menú principal
+
+    // Metodo para mostrar el menu.
     private static void mostrarMenuPrincipal() {
         System.out.println("\n=== SISTEMA DE GESTIÓN DE PARTIDOS DEPORTIVOS ===");
         System.out.println("1. Registrar usuario");
@@ -117,7 +97,7 @@ public class Main {
         System.out.print("Seleccione una opción: ");
     }
 
-    // Método para mostrar el menú de usuario logueado
+    // Metodo para mostrar el menu cuando se loggea el usuario
     private static void menuUsuarioLogueado(Scanner scanner, UsuarioController usuarioController,
                                             PartidoController partidoController) {
         boolean volver = false;
@@ -134,32 +114,32 @@ public class Main {
 
             int opcion = obtenerOpcionUsuario(scanner);
             switch (opcion) {
-                case 1: // Buscar partidos por ubicación
+                case 1:
                     buscarPartidosPorUbicacion(scanner, partidoController);
                     break;
 
-                case 2: // Crear un nuevo partido
+                case 2:
                     crearPartido(scanner, partidoController, usuarioController.getUsuario());
                     break;
 
-                case 3: // Unirse a un partido
+                case 3:
                     unirseAPartido(scanner, partidoController, usuarioController.getUsuario());
                     break;
 
-                case 4: // Gestionar mis partidos (cambiar estados)
+                case 4:
                     gestionarMisPartidos(scanner, partidoController, usuarioController.getUsuario());
                     break;
 
-                case 5: // Actualizar perfil
+                case 5:
                     actualizarPerfil(scanner, usuarioController);
                     break;
 
-                case 6: // Ver notificaciones
+                case 6:
                     System.out.println("*** Simulación de notificaciones ***");
                     simularNotificaciones(usuarioController.getUsuario());
                     break;
 
-                case 0: // Volver al menú principal
+                case 0:
                     usuarioController.cerrarSesion();
                     volver = true;
                     break;
@@ -170,7 +150,6 @@ public class Main {
         }
     }
 
-    // Método para registrar un usuario
     private static void registrarUsuario(Scanner scanner, UsuarioController usuarioController) {
         System.out.println("\n=== REGISTRO DE USUARIO ===");
         System.out.print("Ingrese nombre de usuario: ");
@@ -180,20 +159,17 @@ public class Main {
         System.out.print("Ingrese contraseña: ");
         String password = scanner.nextLine();
 
-        // Crear DTO para el nuevo usuario
         UsuarioDTO nuevoUsuario = new UsuarioDTO();
         nuevoUsuario.setNombreUsuario(nombreUsuario);
         nuevoUsuario.setCorreo(correo);
         nuevoUsuario.setPassword(password);
 
-        // Preguntar por ubicación
         System.out.println("\n¿Desea agregar su ubicación? (s/n): ");
         if (scanner.nextLine().equalsIgnoreCase("s")) {
             UbicacionDTO ubicacion = solicitarUbicacion(scanner);
             nuevoUsuario.setUbicacion(ubicacion);
         }
 
-        // Preguntar por deportes favoritos
         System.out.println("\n¿Desea agregar un deporte favorito? (s/n): ");
         if (scanner.nextLine().equalsIgnoreCase("s")) {
             List<UsuarioDeporteDTO> deportes = new ArrayList<>();
@@ -203,20 +179,18 @@ public class Main {
 
             System.out.println("Nivel (1: PRINCIPIANTE, 2: INTERMEDIO, 3: AVANZADO): ");
             int nivelSeleccionado = Integer.parseInt(scanner.nextLine());
-            Nivel nivel = Nivel.PRINCIPIANTE; // Por defecto
+            Nivel nivel = Nivel.PRINCIPIANTE;
             switch (nivelSeleccionado) {
                 case 1: nivel = Nivel.PRINCIPIANTE; break;
                 case 2: nivel = Nivel.INTERMEDIO; break;
                 case 3: nivel = Nivel.AVANZADO; break;
             }
 
-            // Crear DTO para el deporte favorito
             DeporteDTO deporteDTO = new DeporteDTO();
             deporteDTO.setNombre(nombreDeporte);
-            deporteDTO.setJugadoresMinimos(2); // Valores por defecto
-            deporteDTO.setJugadoresMaximos(22);
+            deporteDTO.setJugadoresMinimos(2); // Valores por defecto, ponele que mínimo 2 jugadores.
+            deporteDTO.setJugadoresMaximos(22); // Valores por defecto, ponele que máximo 22 jugadores (Futbol 11).
 
-            // Crear la relación usuario-deporte
             UsuarioDeporteDTO usuarioDeporteDTO = new UsuarioDeporteDTO();
             usuarioDeporteDTO.setDeporte(deporteDTO);
             usuarioDeporteDTO.setNivel(nivel);
@@ -225,7 +199,6 @@ public class Main {
             nuevoUsuario.setDeportes(deportes);
         }
 
-        // Registrar el usuario en el sistema
         UsuarioDTO resultado = usuarioController.crearUsuario(nuevoUsuario);
         if (resultado != null) {
             System.out.println("\n¡Usuario registrado con éxito!");
@@ -234,7 +207,6 @@ public class Main {
         }
     }
 
-    // Método para iniciar sesión
     private static void iniciarSesion(Scanner scanner, UsuarioController usuarioController) {
         System.out.println("\n=== INICIAR SESIÓN ===");
         System.out.print("Ingrese nombre de usuario: ");
@@ -250,7 +222,6 @@ public class Main {
         }
     }
 
-    // Método para buscar partidos por ubicación
     private static void buscarPartidosPorUbicacion(Scanner scanner, PartidoController partidoController) {
         System.out.println("\n=== BUSCAR PARTIDOS POR UBICACIÓN ===");
         UbicacionDTO ubicacion = solicitarUbicacion(scanner);
@@ -268,11 +239,8 @@ public class Main {
         }
     }
 
-    // Método para crear un nuevo partido
     private static void crearPartido(Scanner scanner, PartidoController partidoController, Usuario organizador) {
         System.out.println("\n=== CREAR NUEVO PARTIDO ===");
-
-        // Elegir deporte
         Deporte deporteSeleccionado = null;
         System.out.println("Deportes disponibles:");
         int i = 1;
@@ -284,7 +252,6 @@ public class Main {
         System.out.print("Seleccione un deporte (número): ");
         int indiceDeporte = Integer.parseInt(scanner.nextLine());
 
-        // Obtener el deporte seleccionado
         if (indiceDeporte > 0 && indiceDeporte <= mapDeportes.size()) {
             String[] deportesArray = mapDeportes.keySet().toArray(new String[0]);
             String nombreDeporte = deportesArray[indiceDeporte - 1];
@@ -294,27 +261,20 @@ public class Main {
             deporteSeleccionado = mapDeportes.get("Fútbol");
         }
 
-        // Solicitar datos del partido
         System.out.print("Cantidad de jugadores requeridos: ");
         int cantidadJugadores = Integer.parseInt(scanner.nextLine());
 
         System.out.print("Duración del partido (en minutos): ");
         int duracion = Integer.parseInt(scanner.nextLine());
 
-        // Solicitar ubicación
         UbicacionDTO ubicacionDTO = solicitarUbicacion(scanner);
 
-        // Solicitar fecha y hora
         System.out.println("Fecha del partido (formato dd/MM/yyyy): ");
         String fecha = scanner.nextLine();
         System.out.println("Hora del partido (formato HH:mm): ");
         String hora = scanner.nextLine();
-
-        // Convertir a LocalDateTime
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
         LocalDateTime fechaHora = LocalDateTime.parse(fecha + " " + hora, formatter);
-
-        // Seleccionar estrategia de emparejamiento
         System.out.println("Seleccione estrategia de emparejamiento:");
         System.out.println("1. Por nivel de habilidad");
         System.out.println("2. Por ubicación/cercanía");
@@ -333,7 +293,6 @@ public class Main {
                 estrategia = "nivel";
         }
 
-        // Crear el partido
         PartidoDTO nuevoPartido = partidoController.crearPartido(
             deporteSeleccionado.getNombre(),
             cantidadJugadores,
@@ -353,7 +312,6 @@ public class Main {
         }
     }
 
-    // Método para unirse a un partido
     private static void unirseAPartido(Scanner scanner, PartidoController partidoController, Usuario usuario) {
         System.out.println("\n=== UNIRSE A UN PARTIDO ===");
 
@@ -378,12 +336,10 @@ public class Main {
         }
     }
 
-    // Método para gestionar los partidos del usuario (cambiar estados)
     private static void gestionarMisPartidos(Scanner scanner, PartidoController partidoController, Usuario usuario) {
         System.out.println("\n=== GESTIONAR MIS PARTIDOS ===");
 
-        // En un sistema real, aquí filtraríamos solo los partidos donde el usuario es organizador
-        // Por simplicidad, mostramos todos los partidos
+        // Por simplicidad, mostramos todos los partidos, aunque en realidad, se deberia ver unicamente los partidos de dicho usuario.
         List<PartidoDTO> partidos = partidoController.obtenerTodosLosPartidos();
         if (partidos.isEmpty()) {
             System.out.println("No hay partidos para gestionar.");
@@ -429,7 +385,6 @@ public class Main {
         }
     }
 
-    // Método para actualizar perfil de usuario
     private static void actualizarPerfil(Scanner scanner, UsuarioController usuarioController) {
         System.out.println("\n=== ACTUALIZAR PERFIL ===");
 
@@ -456,21 +411,17 @@ public class Main {
         }
     }
 
-    // Método para simular recepción de notificaciones (Adapter + Observer)
     private static void simularNotificaciones(Usuario usuario) {
         System.out.println("\n=== NOTIFICACIONES RECIENTES ===");
 
-        // Crear un adaptador para Firebase y un notificador
         Firebase firebase = new Firebase();
         INotificacionAdapter firebaseAdapter = new FirebaseAdapter(firebase);
         Notificador notificadorPush = new Notificador(firebaseAdapter);
 
-        // Crear un adaptador para Mail y un notificador
         Mail mail = new Mail();
         INotificacionAdapter mailAdapter = new MailAdapter(mail);
         Notificador notificadorMail = new Notificador(mailAdapter);
 
-        // Enviar algunas notificaciones de ejemplo
         System.out.println("Notificación por Firebase Push:");
         notificadorPush.notificar(usuario, "¡Se ha creado un nuevo partido de tu deporte favorito!");
 
@@ -483,7 +434,6 @@ public class Main {
         notificadorMail.notificar(usuario, mensaje);
     }
 
-    // Método para mostrar la lista de partidos
     private static void mostrarListaPartidos(List<PartidoDTO> partidos) {
         for (PartidoDTO partido : partidos) {
             System.out.println("----------------------------------");
@@ -500,16 +450,14 @@ public class Main {
         }
     }
 
-    // Método para obtener una opción numérica del usuario
     private static int obtenerOpcionUsuario(Scanner scanner) {
         try {
             return Integer.parseInt(scanner.nextLine());
         } catch (NumberFormatException e) {
-            return -1; // Opción inválida
+            return -1; // Aca cae, si el usuario ingresa una opicion no valida, como letras o caracteres raros.
         }
     }
 
-    // Método para solicitar datos de ubicación
     private static UbicacionDTO solicitarUbicacion(Scanner scanner) {
         System.out.print("Ciudad: ");
         String ciudad = scanner.nextLine();

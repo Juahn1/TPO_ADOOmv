@@ -14,10 +14,10 @@ import State.EstadoPartidoFinalizado;
 import State.EstadoPartidoCancelado;
 
 public class Partido {
-	// atributos
+	private int id;
 	private Deporte deporte;
 	private int cantidadJugadoresRequeridos;
-	private int duracion; // en minutos
+	private int duracion;
 	private Nivel nivelMaximo;
 	private Nivel nivelMinimo;
 	private Ubicacion ubicacion;

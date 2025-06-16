@@ -2,28 +2,28 @@ package Strategy;
 
 import Model.Partido;
 import Model.Usuario;
+import Model.Ubicacion;
 
-public class EstrategiaEmparejamientoUbicacion extends EstrategiaEmparejamiento{
+public class EstrategiaEmparejamientoUbicacion implements EstrategiaEmparejamiento {
 
-	public boolean esCompatible(Jugador jugador, Partido partido) {
-		double distancia = calcularDistancia(jugador.getLatitud(), jugador.getLongitud(),
-				partido.getLatitud(), partido.getLongitud());
-		return distancia <= UMBRAL_KM;
+	private static final double UMBRAL_KM = 10.0; // Distancia máxima en kilómetros
+
+	@Override
+	public boolean esCompatible(Usuario jugador, Partido partido) {
+		// Utilizamos directamente el método calcularDistancia de la clase Ubicacion
+		double distancia = jugador.getUbicacion().calcularDistancia(partido.getUbicacion());
+
+		// Convertimos la distancia (que es una aproximación euclidiana) a kilómetros
+		// suponiendo que estamos trabajando con coordenadas GPS en grados
+		// Factor de conversión aproximado: 1 grado ≈ 111 km
+		double distanciaEnKm = distancia * 111.0;
+
+		return distanciaEnKm <= UMBRAL_KM;
 	}
 
-	private double calcularDistancia(double lat1, double lon1, double lat2, double lon2) {
-		final int R = 6371; // Radio de la Tierra en km
-		double dLat = Math.toRadians(lat2 - lat1);
-		double dLon = Math.toRadians(lon2 - lon1);
-		double a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-				Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
-						Math.sin(dLon/2) * Math.sin(dLon/2);
-		double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-		return R * c;
+	@Override
+	public void emparejar(Partido partido) {
+		System.out.println("Emparejando jugadores por cercanía geográfica para el partido: " + partido.getId());
+		// Implementación: buscar jugadores cercanos para formar equipos equilibrados
 	}
-		
-	public void emparejar() {
-			
-		}
-
 }

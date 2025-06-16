@@ -3,16 +3,17 @@ package Strategy;
 import Model.Partido;
 import Model.Usuario;
 
-public class EstrategiaEmparejamientoHistorial extends EstrategiaEmparejamiento{
+public class EstrategiaEmparejamientoHistorial implements EstrategiaEmparejamiento {
 
-	public boolean esCompatible(Jugador jugador, Partido partido) {
+	@Override
+	public boolean esCompatible(Usuario jugador, Partido partido) {
 		int historial = jugador.getCantidadPartidosJugados();
-		// Reglas hipotéticas: mínimo 5 partidos
+		// Reglas hipotéticas: mínimo partidos requeridos
 		return historial >= partido.getMinPartidosRequeridos();
 	}
 	
-	public void emparejar() {
-		
+	@Override
+	public void emparejar(Partido partido) {
+		System.out.println("Emparejando jugadores por historial de partidos para el partido: " + partido.getId());
 	}
-
 }

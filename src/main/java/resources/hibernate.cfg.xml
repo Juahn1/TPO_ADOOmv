@@ -1,0 +1,26 @@
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+    <session-factory>
+
+        <!-- Configuración SQLite -->
+        <property name="hibernate.connection.driver_class">org.sqlite.JDBC</property>
+        <property name="hibernate.connection.url">jdbc:sqlite:bd_local.sqlite</property>
+
+        <!-- Dialecto (Hibernate community para SQLite) -->
+        <property name="hibernate.dialect">org.hibernate.community.dialect.SQLiteDialect</property>
+
+        <!-- Mostrar SQL en consola -->
+        <property name="hibernate.show_sql">true</property>
+        <property name="hibernate.format_sql">true</property>
+
+        <!-- Crear tablas si no existen -->
+        <property name="hibernate.hbm2ddl.auto">update</property>
+
+        <!-- Clases anotadas -->
+        <mapping class="Model.Usuario"/>
+
+    </session-factory>
+</hibernate-configuration>

@@ -1,5 +1,7 @@
 package Model;
 
+import jakarta.persistence.*;
+
 import lombok.Data;
 import java.util.List;
 import java.util.ArrayList;
@@ -7,13 +9,27 @@ import java.util.stream.Collectors;
 import DTO.*;
 
 @Data
+@Entity
+@Table(name = "Usuarios")
 public class Usuario {
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private long Id;
 	private String nombreUsuario;
 	private String correo;
 	private String password;
+
+	@OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<UsuarioDeporte> deportes;
+
+	@ManyToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "ubicacion_id")
 	private Ubicacion ubicacion;
+
+	@OneToMany(mappedBy = "organizador", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Partido> partidos;
+
 	private boolean sesion;
 	private int cantidadPartidosJugados; // Esta variable solo se usa para la estrategia de emparejar por historial de partidos.
 

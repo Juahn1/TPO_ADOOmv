@@ -1,5 +1,6 @@
 package Controllers;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import Model.*;
 import Strategy.*;
@@ -10,18 +11,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Data
+@AllArgsConstructor
 public class PartidoController {
 	
 	private final List<Partido> partidos;
 	private final List<Notificador> notificadores;
 	private final Map<String, Deporte> deportes;
 
-	public PartidoController(List<Partido> partidos, List<Notificador> notificadores, Map<String, Deporte> deportes) {
-		this.partidos = partidos;
-		this.notificadores = notificadores;
-		this.deportes = deportes;
-	}
+
 
 	public PartidoDTO crearPartido(String nombreDeporte, int cantidadJugadores, int duracion,
                                   UbicacionDTO ubicacionDTO, Usuario organizador,

@@ -1,9 +1,12 @@
 package Model;
 
+import jakarta.persistence.*;
 import lombok.Data;
 import DTO.UbicacionDTO;
 
 @Data
+@Entity
+@Table(name = "ubicaciones")
 public class Ubicacion {
 	private String ciudad;
 	private String direccion;

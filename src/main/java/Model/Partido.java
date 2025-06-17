@@ -3,6 +3,7 @@ package Model;
 import Strategy.EstrategiaEmparejamiento;
 import DTO.PartidoDTO;
 import DTO.UbicacionDTO;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,6 +21,7 @@ import State.EstadoPartidoCancelado;
 
 @Getter
 @Setter
+@AllArgsConstructor
 public class Partido {
 	private int id;
 	private Deporte deporte;
@@ -36,24 +38,7 @@ public class Partido {
 	private LocalDateTime fechaHora;
 	private int minPartidosRequeridos;
 
-	public Partido(Ubicacion ubicacion, Deporte deporte, int cantidadJugadoresRequeridos,
-                  int duracion, Usuario organizador, EstrategiaEmparejamiento estrategia,
-                  LocalDateTime fechaHora) {
-		this.ubicacion = ubicacion;
-		this.deporte = deporte;
-		this.cantidadJugadoresRequeridos = cantidadJugadoresRequeridos;
-		this.duracion = duracion;
-		this.organizador = organizador;
-		this.estrategiaEmparejamiento = estrategia;
-		this.estado = new EstadoBuscandoJugadores();
-		this.jugadoresAnotados = new ArrayList<>();
-		this.observadores = new ArrayList<>();
-		this.fechaHora = fechaHora;
-		this.jugadoresAnotados.add(organizador);
-		this.nivelMinimo = Nivel.PRINCIPIANTE;
-		this.nivelMaximo = Nivel.AVANZADO;
-		this.minPartidosRequeridos = 0;
-	}
+
 	public void agregarJugador(Usuario jugador) {
 		if (!jugadoresAnotados.contains(jugador)) {
 			jugadoresAnotados.add(jugador);

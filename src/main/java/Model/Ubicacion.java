@@ -1,24 +1,27 @@
 package Model;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 import DTO.UbicacionDTO;
+
 
 @Data
 @Entity
-@Table(name = "ubicaciones")
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class Ubicacion {
+
+	@Id
+	@GeneratedValue
+	private long id;
+
 	private String ciudad;
 	private String direccion;
 	private double latitud;
 	private double longitud;
 
-	public Ubicacion(String ciudad, String direccion, double latitud, double longitud) {
-		this.ciudad = ciudad;
-		this.direccion = direccion;
-		this.latitud = latitud;
-		this.longitud = longitud;
-	}
+
 
 
 	public double calcularDistancia(Ubicacion otraUbicacion) {
@@ -28,6 +31,13 @@ public class Ubicacion {
 	}
 
 	public UbicacionDTO toDTO() {
-		return new UbicacionDTO(this.latitud, this.longitud, this.direccion, this.ciudad);
+		return UbicacionDTO.builder()
+				.latitud(this.latitud)
+				.longitud(this.longitud)
+				.direccion(this.direccion)
+				.ciudad(this.ciudad)
+				.build();
+
 	}
+
 }

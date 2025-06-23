@@ -1,4 +1,4 @@
-package Adapter;
+package main.java.Adapter;
 import Model.Mail;
 
 public class MailAdapter implements INotificacionAdapter {

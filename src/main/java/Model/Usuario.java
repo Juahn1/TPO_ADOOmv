@@ -2,15 +2,21 @@ package Model;
 
 import jakarta.persistence.*;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 import DTO.*;
+import lombok.NoArgsConstructor;
 
 @Data
 @Entity
 @Table(name = "Usuarios")
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Usuario {
 
 	@Id
@@ -33,11 +39,7 @@ public class Usuario {
 	private boolean sesion;
 	private int cantidadPartidosJugados; // Esta variable solo se usa para la estrategia de emparejar por historial de partidos.
 
-	public Usuario(String nombreUsuario, String correo, String password) {
-		this.nombreUsuario = nombreUsuario;
-		this.correo = correo;
-		this.password = password;
-	}
+
 
 	public List<PartidoDTO> consultarHistorialPartidos() {
 		if (partidos == null || partidos.isEmpty()) {

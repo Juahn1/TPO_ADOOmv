@@ -3,10 +3,8 @@ package Model;
 import Strategy.EstrategiaEmparejamiento;
 import DTO.PartidoDTO;
 import DTO.UbicacionDTO;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -19,11 +17,16 @@ import State.EstadoPartidoEnJuego;
 import State.EstadoPartidoFinalizado;
 import State.EstadoPartidoCancelado;
 
-@Getter
-@Setter
+
+@Data
+@Entity
+@NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Partido {
-	private int id;
+	@Id
+	@GeneratedValue
+	private float id;
 	private Deporte deporte;
 	private int cantidadJugadoresRequeridos;
 	private int duracion;
@@ -79,6 +82,8 @@ public class Partido {
 		}
 	}
 
+	public
+
 	public void editarPartido(Ubicacion ubicacion, int duracion, LocalDateTime fechaHora) {
 		this.ubicacion = ubicacion;
 		this.duracion = duracion;
@@ -117,15 +122,16 @@ public class Partido {
 	}
 
 	public PartidoDTO toDTO() {
-		PartidoDTO dto = new PartidoDTO();
-		dto.setId(String.valueOf(this.id));
-		dto.setNombreDeporte(this.deporte.getNombre());
-		dto.setEstado(this.estado.getNombreEstado());
-		dto.setUbicacion(this.ubicacion != null ? this.ubicacion.toDTO() : null);
-		dto.setFechaHora(this.fechaHora.toString());
-		dto.setCantidadJugadoresAnotados(this.jugadoresAnotados.size());
-		dto.setCantidadJugadoresRequeridos(this.cantidadJugadoresRequeridos);
-		dto.setDuracion(this.duracion);
-		return dto;
+		return PartidoDTO.builder()
+				.id(String.valueOf(this.id))
+				.nombreDeporte(this.deporte.getNombre())
+				.estado(this.estado != null ? this.estado.getNombreEstado() : "Necesitamos jugadores")
+				.ubicacion(this.ubicacion != null ? this.ubicacion.toDTO() : null)
+				.fechaHora(this.fechaHora.toString())
+				.cantidadJugadoresAnotados(this.jugadoresAnotados != null ? this.jugadoresAnotados.size() : 1)
+				.cantidadJugadoresRequeridos(this.cantidadJugadoresRequeridos)
+				.duracion(this.duracion)
+				.build();
 	}
+
 }

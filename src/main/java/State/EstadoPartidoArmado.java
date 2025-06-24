@@ -2,8 +2,6 @@ package State;
 
 import Model.Partido;
 import Model.Usuario;
-import State.EstadoBuscandoJugadores;
-import State.EstadoPartidoConfirmado;
 
 public class EstadoPartidoArmado implements EstadoPartido {
     private Partido partido;
@@ -25,19 +23,21 @@ public class EstadoPartidoArmado implements EstadoPartido {
             return;
         }
 
-        System.out.println("Jugador eliminado del partido armado.");
+        System.out.println("Jugador " + jugador.getNombreUsuario() + " eliminado del partido armado.");
         partido.getJugadoresAnotados().remove(jugador);
         if (partido.getJugadoresAnotados().size() < partido.getCantidadJugadoresRequeridos()) {
             partido.cambiarEstado(new EstadoBuscandoJugadores());
-            System.out.println("Se bajó alguien, el partido ahora volvió a Buscando Jugadores");
+            System.out.println("Se bajó alguien, el partido ahora volvió a estado: Buscando Jugadores");
         }
     }
 
     @Override
     public void confirmarJugador() {
-        System.out.println("Todos los jugadores confirmaron su participación.");
+        // Cuando todos los jugadores han confirmado en Partido.verificarConfirmaciones()
+        // este método es llamado para efectuar el cambio de estado
+        System.out.println("Todos los jugadores han confirmado su participación.");
         partido.cambiarEstado(new EstadoPartidoConfirmado());
-        System.out.println("¡El partido ha sido confirmado!");
+        System.out.println("¡El partido ha sido confirmado y pasa a estado: Confirmado!");
     }
 
     @Override

@@ -112,6 +112,16 @@ public class PartidoController {
 		return partido.toDTO();
 	}
 
+	public PartidoDTO confirmarJugadorEnPartido(String idPartido, Usuario jugador) {
+		Partido partido = buscarPartido(idPartido);
+		if (partido == null) {
+			return null;
+		}
+
+		partido.confirmarJugador(jugador);
+		return partido.toDTO();
+	}
+
 	public PartidoDTO confirmarPartido(String idPartido) {
 		Partido partido = buscarPartido(idPartido);
 		if (partido == null) {

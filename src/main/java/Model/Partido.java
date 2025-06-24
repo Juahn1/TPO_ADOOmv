@@ -7,7 +7,9 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import State.EstadoPartido;
 import State.EstadoBuscandoJugadores;
 import State.EstadoPartidoArmado;
@@ -28,6 +30,7 @@ public class Partido {
 	private Ubicacion ubicacion;
 	private EstadoPartido estado;
 	private List<Usuario> jugadoresAnotados;
+	private Set<Usuario> jugadoresConfirmados;
 	private EstrategiaEmparejamiento estrategiaEmparejamiento;
 	private List<Notificador> observadores;
 	private Usuario organizador;
@@ -44,9 +47,12 @@ public class Partido {
 		this.organizador = organizador;
 		this.estrategiaEmparejamiento = estrategia;
 		this.jugadoresAnotados = new ArrayList<>();
+		this.jugadoresConfirmados = new HashSet<>();
 		this.observadores = new ArrayList<>();
 		this.fechaHora = fechaHora;
 		this.jugadoresAnotados.add(organizador);
+		// El organizador se considera confirmado automáticamente
+		this.jugadoresConfirmados.add(organizador);
 		this.nivelMinimo = Nivel.PRINCIPIANTE;
 		this.nivelMaximo = Nivel.AVANZADO;
 		this.minPartidosRequeridos = 0;
@@ -67,6 +73,7 @@ public class Partido {
 	public void eliminarJugador(Usuario jugador) {
 		if (jugadoresAnotados.contains(jugador)) {
 			estado.eliminarJugador(jugador);
+			jugadoresConfirmados.remove(jugador); // Si se elimina un jugador, también eliminar su confirmación
 		} else {
 			System.out.println("El jugador no está anotado en este partido.");
 		}
@@ -80,6 +87,26 @@ public class Partido {
 
 	public void cancelarPartido() {
 		estado.cancelarPartido();
+	}
+
+	public void confirmarJugador(Usuario jugador) {
+		if (jugadoresAnotados.contains(jugador)) {
+			jugadoresConfirmados.add(jugador);
+			System.out.println("Jugador " + jugador.getNombreUsuario() + " confirmado para el partido.");
+			verificarConfirmaciones();
+		} else {
+			System.out.println("No se puede confirmar un jugador que no está anotado.");
+		}
+	}
+
+	private void verificarConfirmaciones() {
+		// Solo verificar confirmaciones si el partido está en estado armado
+		if (estado instanceof EstadoPartidoArmado) {
+			if (jugadoresConfirmados.size() == jugadoresAnotados.size() &&
+				jugadoresAnotados.size() >= cantidadJugadoresRequeridos) {
+				estado.confirmarJugador();
+			}
+		}
 	}
 
 	public void notificar() {

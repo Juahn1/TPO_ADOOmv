@@ -12,7 +12,7 @@ public class EstadoBuscandoJugadores implements EstadoPartido {
 
     @Override
     public void agregarJugador(Usuario jugador) {
-        System.out.println("Jugador agregado a partido que busca jugadores.");
+        System.out.println("Jugador " + jugador.getNombreUsuario() + " agregado a partido que busca jugadores.");
         if (!partido.getJugadoresAnotados().contains(jugador)) {
             partido.getJugadoresAnotados().add(jugador);
             verificarCantidadJugadores();
@@ -25,7 +25,7 @@ public class EstadoBuscandoJugadores implements EstadoPartido {
             System.out.println("El organizador no puede abandonar el partido sin cancelarlo.");
             return;
         }
-        System.out.println("Jugador eliminado del partido en búsqueda.");
+        System.out.println("Jugador " + jugador.getNombreUsuario() + " eliminado del partido en búsqueda.");
         partido.getJugadoresAnotados().remove(jugador);
     }
 
@@ -49,7 +49,7 @@ public class EstadoBuscandoJugadores implements EstadoPartido {
     private void verificarCantidadJugadores() {
         if (partido.getJugadoresAnotados().size() >= partido.getCantidadJugadoresRequeridos()) {
             partido.cambiarEstado(new EstadoPartidoArmado());
-            System.out.println("El partido completó sus jugadores y pasa a partido armado!");
+            System.out.println("¡El partido completó sus jugadores y pasa a estado: Partido armado!");
         }
     }
 

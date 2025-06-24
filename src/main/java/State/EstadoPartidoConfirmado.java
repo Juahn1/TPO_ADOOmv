@@ -24,8 +24,9 @@ public class EstadoPartidoConfirmado implements EstadoPartido {
             return;
         }
 
-        System.out.println("Jugador eliminado del partido confirmado.");
+        System.out.println("Jugador " + jugador.getNombreUsuario() + " eliminado del partido confirmado.");
         partido.getJugadoresAnotados().remove(jugador);
+        partido.getJugadoresConfirmados().remove(jugador);
         partido.cambiarEstado(new EstadoPartidoArmado());
         System.out.println("El partido ha vuelto al estado: Armado");
     }
@@ -39,6 +40,7 @@ public class EstadoPartidoConfirmado implements EstadoPartido {
     public void cancelarPartido() {
         System.out.println("Cancelando partido confirmado.");
         partido.cambiarEstado(new EstadoPartidoCancelado());
+        System.out.println("Partido cancelado exitosamente.");
     }
 
     public void verificarInicio(LocalDateTime ahora) {

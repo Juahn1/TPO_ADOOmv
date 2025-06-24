@@ -35,6 +35,11 @@ public class EstadoPartidoEnJuego implements EstadoPartido {
     public void finalizarPartido() {
         partido.cambiarEstado(new EstadoPartidoFinalizado());
         System.out.println("El partido ha terminado, y ha pasado a estado: Finalizado");
+
+        // Actualizar estadísticas de jugadores
+        for (Usuario jugador : partido.getJugadoresAnotados()) {
+            jugador.setCantidadPartidosJugados(jugador.getCantidadPartidosJugados() + 1);
+        }
     }
 
     public void verificarFinalizacion(LocalDateTime ahora) {

@@ -40,6 +40,7 @@ package "Model" #EEFFEE {
     - minPartidosRequeridos: int
 
     // Métodos
+xº    + Partido(ubicacion: Ubicacion, deporte: Deporte, cantidadJugadoresRequeridos: int, duracion: int, organizador: Usuario, estrategia: EstrategiaEmparejamiento, fechaHora: LocalDateTime)
     + agregarJugador(jugador: Usuario): void
     + eliminarJugador(jugador: Usuario): void
     + cambiarEstado(nuevoEstado: EstadoPartido): void
@@ -51,6 +52,17 @@ package "Model" #EEFFEE {
     + agregarObservador(observador: Notificador): void
     + eliminarObservador(observador: Notificador): void
     + toDTO(): PartidoDTO
+    + getId(): int
+    + setId(id: int): void
+    + getDeporte(): Deporte
+    + getUbicacion(): Ubicacion
+    + getEstado(): EstadoPartido
+    + getJugadoresAnotados(): List<Usuario>
+    + getCantidadJugadoresRequeridos(): int
+    + getNivelMinimo(): Nivel
+    + getNivelMaximo(): Nivel
+    + getFechaHora(): LocalDateTime
+    + getEstrategiaEmparejamiento(): EstrategiaEmparejamiento
   }
 
   class Usuario {
@@ -62,11 +74,28 @@ package "Model" #EEFFEE {
     - partidos: List<Partido>
     - sesion: boolean
     - cantidadPartidosJugados: int
+
+    + Usuario(nombreUsuario: String, correo: String, password: String)
     + consultarHistorialPartidos(): List<PartidoDTO>
     + buscarPartido(ubicacionDeseada: Ubicacion): PartidoDTO
     + login(nombreUsuario: String, password: String): UsuarioDTO
     + logout(): UsuarioDTO
     + toDTO(): UsuarioDTO
+    + getNombreUsuario(): String
+    + getCorreo(): String
+    + getPassword(): String
+    + setPassword(password: String): void
+    + getDeportes(): List<UsuarioDeporte>
+    + setDeportes(deportes: List<UsuarioDeporte>): void
+    + getUbicacion(): Ubicacion
+    + setUbicacion(ubicacion: Ubicacion): void
+    + getPartidos(): List<Partido>
+    + setPartidos(partidos: List<Partido>): void
+    + isSesion(): boolean
+    + setSesion(sesion: boolean): void
+    + getCantidadPartidosJugados(): int
+    + setCantidadPartidosJugados(cantidad: int): void
+    - convertirUsuarioDeporteADTO(ud: UsuarioDeporte): UsuarioDeporteDTO
   }
 
   class Ubicacion {
@@ -74,20 +103,38 @@ package "Model" #EEFFEE {
     - direccion: String
     - latitud: double
     - longitud: double
+
+    + Ubicacion(ciudad: String, direccion: String, latitud: double, longitud: double)
     + calcularDistancia(otra: Ubicacion): double
     + toDTO(): UbicacionDTO
+    + getCiudad(): String
+    + getDireccion(): String
+    + getLatitud(): double
+    + getLongitud(): double
   }
 
   class Deporte {
     - nombre: String
     - jugadoresMaximos: int
     - jugadoresMinimos: int
+
+    + Deporte(nombre: String, jugadoresMinimos: int, jugadoresMaximos: int)
+    + getNombre(): String
+    + getJugadoresMaximos(): int
+    + getJugadoresMinimos(): int
   }
 
   class UsuarioDeporte {
     - nivel: Nivel
     - deporte: Deporte
     - jugador: Usuario
+
+    + getNivel(): Nivel
+    + setNivel(nivel: Nivel): void
+    + getDeporte(): Deporte
+    + setDeporte(deporte: Deporte): void
+    + getJugador(): Usuario
+    + setJugador(jugador: Usuario): void
   }
 
   enum Nivel {
@@ -98,6 +145,8 @@ package "Model" #EEFFEE {
 
   class Notificador {
     - adapter: INotificacionAdapter
+
+    + Notificador(adapter: INotificacionAdapter)
     + notificar(usuario: Usuario, mensaje: String): void
   }
 
@@ -116,7 +165,9 @@ package "Controllers" #F0F8FF {
     - partidos: List<Partido>
     - notificadores: List<Notificador>
     - deportes: Map<String, Deporte>
-    + crearPartido(PartidoDTO partido): PartidoDTO
+
+    + PartidoController(partidos: List<Partido>, notificadores: List<Notificador>, deportes: Map<String, Deporte>)
+    + crearPartido(nombreDeporte: String, cantidadJugadores: int, duracion: int, ubicacionDTO: UbicacionDTO, organizador: Usuario, estrategia: String, fechaHora: LocalDateTime): PartidoDTO
     + buscarPartidosPorUbicacion(ubicacionDTO: UbicacionDTO, distanciaMaxima: double): List<PartidoDTO>
     + agregarJugadorAPartido(idPartido: String, jugador: Usuario): PartidoDTO
     + eliminarJugadorDePartido(idPartido: String, jugador: Usuario): PartidoDTO
@@ -128,11 +179,16 @@ package "Controllers" #F0F8FF {
     - buscarDeporte(nombreDeporte: String): Deporte
     - buscarPartido(idPartido: String): Partido
     - generateUniqueId(): int
+    + getPartidos(): List<Partido>
+    + getNotificadores(): List<Notificador>
+    + getDeportes(): Map<String, Deporte>
   }
 
   class UsuarioController {
     - usuario: Usuario
     - usuarios: List<Usuario>
+
+    + UsuarioController(usuarios: List<Usuario>)
     + crearUsuario(usuarioDTO: UsuarioDTO): UsuarioDTO
     + iniciarSesion(nombre: String, contrasena: String): UsuarioDTO
     + cerrarSesion(): UsuarioDTO
@@ -141,6 +197,9 @@ package "Controllers" #F0F8FF {
     + actualizarPerfil(datosActualizados: UsuarioDTO): UsuarioDTO
     + getUsuarioActual(): UsuarioDTO
     + agregarUsuarioAlSistema(usuario: Usuario): void
+    + getUsuario(): Usuario
+    + setUsuario(usuario: Usuario): void
+    + getUsuarios(): List<Usuario>
   }
 }
 
@@ -154,30 +213,70 @@ package "State" #FFEEEE {
   }
 
   together {
-    class EstadoBuscandoJugadores implements EstadoPartido
-    class EstadoPartidoArmado implements EstadoPartido
+    class EstadoBuscandoJugadores implements EstadoPartido {
+      + agregarJugador(partido: Partido): void
+      + eliminarJugador(partido: Partido): void
+      + confirmarJugador(partido: Partido): void
+      + cancelarPartido(): void
+    }
+
+    class EstadoPartidoArmado implements EstadoPartido {
+      + agregarJugador(partido: Partido): void
+      + eliminarJugador(partido: Partido): void
+      + confirmarJugador(partido: Partido): void
+      + cancelarPartido(): void
+      - jugadorConfirmado(jugador: Usuario): boolean
+    }
+
     class EstadoPartidoConfirmado implements EstadoPartido {
+      + agregarJugador(partido: Partido): void
+      + eliminarJugador(partido: Partido): void
+      + confirmarJugador(partido: Partido): void
+      + cancelarPartido(): void
       + verificarInicio(partido: Partido, ahora: LocalDateTime): void
     }
+
     class EstadoPartidoEnJuego implements EstadoPartido {
+      + agregarJugador(partido: Partido): void
+      + eliminarJugador(partido: Partido): void
+      + confirmarJugador(partido: Partido): void
+      + cancelarPartido(): void
       + finalizarPartido(partido: Partido): void
     }
-    class EstadoPartidoFinalizado implements EstadoPartido
-    class EstadoPartidoCancelado implements EstadoPartido
+
+    class EstadoPartidoFinalizado implements EstadoPartido {
+      + agregarJugador(partido: Partido): void
+      + eliminarJugador(partido: Partido): void
+      + confirmarJugador(partido: Partido): void
+      + cancelarPartido(): void
+    }
+
+    class EstadoPartidoCancelado implements EstadoPartido {
+      + agregarJugador(partido: Partido): void
+      + eliminarJugador(partido: Partido): void
+      + confirmarJugador(partido: Partido): void
+      + cancelarPartido(): void
+    }
   }
 }
 
 package "Strategy" #EEEEFF {
   interface EstrategiaEmparejamiento {
     + esCompatible(jugador: Usuario, partido: Partido): boolean
-    + emparejar(partido: Partido): void
   }
 
   together {
-    class EstrategiaEmparejamientoNivel implements EstrategiaEmparejamiento
-    class EstrategiaEmparejamientoHistorial implements EstrategiaEmparejamiento
+    class EstrategiaEmparejamientoNivel implements EstrategiaEmparejamiento {
+      + esCompatible(jugador: Usuario, partido: Partido): boolean
+    }
+
+    class EstrategiaEmparejamientoHistorial implements EstrategiaEmparejamiento {
+      + esCompatible(jugador: Usuario, partido: Partido): boolean
+    }
+
     class EstrategiaEmparejamientoUbicacion implements EstrategiaEmparejamiento {
-      - UMBRAL_KM: double
+      - UMBRAL_KM: double = 10.0
+      + esCompatible(jugador: Usuario, partido: Partido): boolean
     }
   }
 }
@@ -190,9 +289,14 @@ package "Adapter" #FFFEE0 {
   together {
     class FirebaseAdapter implements INotificacionAdapter {
       - firebase: Firebase
+      + FirebaseAdapter(firebase: Firebase)
+      + enviar(destino: String, mensaje: String): void
     }
+
     class MailAdapter implements INotificacionAdapter {
       - mailer: Mail
+      + MailAdapter(mailer: Mail)
+      + enviar(destinatario: String, mensaje: String): void
     }
   }
 }
@@ -207,6 +311,11 @@ package "DTO" #F0F0F0 {
     - ubicacion: UbicacionDTO
     - duracion: int
     - fechaHora: String
+
+    + PartidoDTO()
+    + PartidoDTO(id: String, nombreDeporte: String, cantidadJugadoresAnotados: int, cantidadJugadoresRequeridos: int, estado: String, ubicacion: UbicacionDTO, duracion: int, fechaHora: String)
+    + PartidoDTO(id: String, deporte: Deporte, cantidadJugadoresRequeridos: int, duracion: int, ubicacion: UbicacionDTO, fechaHora: String)
+    + getters/setters para todos los atributos
   }
 
   class UsuarioDTO {
@@ -218,12 +327,19 @@ package "DTO" #F0F0F0 {
     - historial: List<PartidoDTO>
     - sesion: boolean
     - cantidadPartidosJugados: int
+
+    + UsuarioDTO()
+    + UsuarioDTO(nombreUsuario: String, correo: String, password: String, ubicacion: UbicacionDTO, deportes: List<UsuarioDeporteDTO>, historial: List<PartidoDTO>, sesion: boolean, cantidadPartidosJugados: int)
+    + getters/setters para todos los atributos
   }
 
   class DeporteDTO {
+    - id: int
     - nombre: String
     - jugadoresMinimos: int
     - jugadoresMaximos: int
+
+    + getters/setters para todos los atributos
   }
 
   class UbicacionDTO {
@@ -231,15 +347,24 @@ package "DTO" #F0F0F0 {
     - longitud: double
     - direccion: String
     - ciudad: String
+
+    + UbicacionDTO()
+    + UbicacionDTO(latitud: double, longitud: double, direccion: String, ciudad: String)
+    + getters/setters para todos los atributos
   }
 
   class UsuarioDeporteDTO {
     - nivel: Nivel
     - deporte: DeporteDTO
+
+    + UsuarioDeporteDTO()
+    + UsuarioDeporteDTO(nivel: Nivel, deporte: DeporteDTO)
+    + getters/setters para todos los atributos
   }
 }
 
 ' RELACIONES!!
+
 Partido o-- EstadoPartido
 Partido o-- EstrategiaEmparejamiento
 
@@ -251,7 +376,7 @@ Usuario "1" -- "*" UsuarioDeporte
 UsuarioDeporte "*" -- "1" Deporte
 Usuario "1" -- "1" Ubicacion
 Partido "1" -- "*" Notificador : observadores
-Notificador "*" -- "1" Usuario
+Notificador "*" -- "1" Usuario : notifica a >
 
 Notificador o-- INotificacionAdapter
 FirebaseAdapter *-- Firebase
@@ -262,18 +387,18 @@ PartidoController o-- Notificador
 PartidoController o-- Deporte
 UsuarioController o-- Usuario
 
-PartidoController ..> PartidoDTO
-UsuarioController ..> UsuarioDTO
-Partido ..> PartidoDTO
-Usuario ..> UsuarioDTO
-Ubicacion ..> UbicacionDTO
-PartidoDTO ..> UbicacionDTO
-PartidoDTO ..> DeporteDTO
-PartidoDTO ..> UsuarioDTO
-UsuarioDTO ..> UbicacionDTO
-UsuarioDTO ..> UsuarioDeporteDTO
-UsuarioDTO ..> PartidoDTO
-UsuarioDeporteDTO ..> DeporteDTO
+PartidoController ..> PartidoDTO : produce
+UsuarioController ..> UsuarioDTO : produce
+Partido ..> PartidoDTO : convierte a
+Usuario ..> UsuarioDTO : convierte a
+Ubicacion ..> UbicacionDTO : convierte a
+PartidoDTO ..> UbicacionDTO : contiene
+PartidoDTO ..> DeporteDTO : referencia
+PartidoDTO ..> UsuarioDTO : referencia
+UsuarioDTO ..> UbicacionDTO : contiene
+UsuarioDTO ..> UsuarioDeporteDTO : contiene
+UsuarioDTO ..> PartidoDTO : contiene historial
+UsuarioDeporteDTO ..> DeporteDTO : contiene
 
 Partido ..> Nivel : nivelMinimo, nivelMaximo
 UsuarioDeporte *-- Nivel : nivel
@@ -283,10 +408,10 @@ UsuarioDeporteDTO *-- Nivel : nivel
 legend top
   <b>Sistema de Partidos Deportivos
   ==
-  <color:red>■</color> State Pattern
-  <color:blue>■</color> Strategy Pattern
-  <color:green>■</color> Adapter Pattern
-  <color:purple>■</color> Observer Pattern
+  <color:red>■</color> State Pattern: Maneja los diferentes estados de un partido
+  <color:blue>■</color> Strategy Pattern: Proporciona diferentes algoritmos para emparejar jugadores
+  <color:green>■</color> Adapter Pattern: Adapta servicios externos (Firebase, Mail) a una interfaz común
+  <color:purple>■</color> Observer Pattern: Notifica a los usuarios sobre cambios en los partidos
 endlegend
 
 @enduml

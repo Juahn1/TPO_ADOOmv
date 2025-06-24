@@ -23,7 +23,6 @@ hide empty members
 
 package "Model" #EEFFEE {
   class Partido {
-  // Variables
     - id: int
     - deporte: Deporte
     - cantidadJugadoresRequeridos: int
@@ -39,8 +38,7 @@ package "Model" #EEFFEE {
     - fechaHora: LocalDateTime
     - minPartidosRequeridos: int
 
-    // Métodos
-xº    + Partido(ubicacion: Ubicacion, deporte: Deporte, cantidadJugadoresRequeridos: int, duracion: int, organizador: Usuario, estrategia: EstrategiaEmparejamiento, fechaHora: LocalDateTime)
+    + Partido(ubicacion: Ubicacion, deporte: Deporte, cantidadJugadoresRequeridos: int, duracion: int, organizador: Usuario, estrategia: EstrategiaEmparejamiento, fechaHora: LocalDateTime)
     + agregarJugador(jugador: Usuario): void
     + eliminarJugador(jugador: Usuario): void
     + cambiarEstado(nuevoEstado: EstadoPartido): void
@@ -52,17 +50,6 @@ xº    + Partido(ubicacion: Ubicacion, deporte: Deporte, cantidadJugadoresRequer
     + agregarObservador(observador: Notificador): void
     + eliminarObservador(observador: Notificador): void
     + toDTO(): PartidoDTO
-    + getId(): int
-    + setId(id: int): void
-    + getDeporte(): Deporte
-    + getUbicacion(): Ubicacion
-    + getEstado(): EstadoPartido
-    + getJugadoresAnotados(): List<Usuario>
-    + getCantidadJugadoresRequeridos(): int
-    + getNivelMinimo(): Nivel
-    + getNivelMaximo(): Nivel
-    + getFechaHora(): LocalDateTime
-    + getEstrategiaEmparejamiento(): EstrategiaEmparejamiento
   }
 
   class Usuario {
@@ -81,21 +68,6 @@ xº    + Partido(ubicacion: Ubicacion, deporte: Deporte, cantidadJugadoresRequer
     + login(nombreUsuario: String, password: String): UsuarioDTO
     + logout(): UsuarioDTO
     + toDTO(): UsuarioDTO
-    + getNombreUsuario(): String
-    + getCorreo(): String
-    + getPassword(): String
-    + setPassword(password: String): void
-    + getDeportes(): List<UsuarioDeporte>
-    + setDeportes(deportes: List<UsuarioDeporte>): void
-    + getUbicacion(): Ubicacion
-    + setUbicacion(ubicacion: Ubicacion): void
-    + getPartidos(): List<Partido>
-    + setPartidos(partidos: List<Partido>): void
-    + isSesion(): boolean
-    + setSesion(sesion: boolean): void
-    + getCantidadPartidosJugados(): int
-    + setCantidadPartidosJugados(cantidad: int): void
-    - convertirUsuarioDeporteADTO(ud: UsuarioDeporte): UsuarioDeporteDTO
   }
 
   class Ubicacion {
@@ -107,10 +79,6 @@ xº    + Partido(ubicacion: Ubicacion, deporte: Deporte, cantidadJugadoresRequer
     + Ubicacion(ciudad: String, direccion: String, latitud: double, longitud: double)
     + calcularDistancia(otra: Ubicacion): double
     + toDTO(): UbicacionDTO
-    + getCiudad(): String
-    + getDireccion(): String
-    + getLatitud(): double
-    + getLongitud(): double
   }
 
   class Deporte {
@@ -119,22 +87,12 @@ xº    + Partido(ubicacion: Ubicacion, deporte: Deporte, cantidadJugadoresRequer
     - jugadoresMinimos: int
 
     + Deporte(nombre: String, jugadoresMinimos: int, jugadoresMaximos: int)
-    + getNombre(): String
-    + getJugadoresMaximos(): int
-    + getJugadoresMinimos(): int
   }
 
   class UsuarioDeporte {
     - nivel: Nivel
     - deporte: Deporte
     - jugador: Usuario
-
-    + getNivel(): Nivel
-    + setNivel(nivel: Nivel): void
-    + getDeporte(): Deporte
-    + setDeporte(deporte: Deporte): void
-    + getJugador(): Usuario
-    + setJugador(jugador: Usuario): void
   }
 
   enum Nivel {
@@ -179,9 +137,6 @@ package "Controllers" #F0F8FF {
     - buscarDeporte(nombreDeporte: String): Deporte
     - buscarPartido(idPartido: String): Partido
     - generateUniqueId(): int
-    + getPartidos(): List<Partido>
-    + getNotificadores(): List<Notificador>
-    + getDeportes(): Map<String, Deporte>
   }
 
   class UsuarioController {
@@ -197,64 +152,84 @@ package "Controllers" #F0F8FF {
     + actualizarPerfil(datosActualizados: UsuarioDTO): UsuarioDTO
     + getUsuarioActual(): UsuarioDTO
     + agregarUsuarioAlSistema(usuario: Usuario): void
-    + getUsuario(): Usuario
-    + setUsuario(usuario: Usuario): void
-    + getUsuarios(): List<Usuario>
   }
 }
 
 package "State" #FFEEEE {
   interface EstadoPartido {
-    + agregarJugador(partido: Partido): void
-    + eliminarJugador(partido: Partido): void
-    + confirmarJugador(partido: Partido): void
+    + setContexto(partido: Partido): void
+    + agregarJugador(jugador: Usuario): void
+    + eliminarJugador(jugador: Usuario): void
+    + confirmarJugador(): void
     + cancelarPartido(): void
     + getNombreEstado(): String
   }
 
   together {
     class EstadoBuscandoJugadores implements EstadoPartido {
-      + agregarJugador(partido: Partido): void
-      + eliminarJugador(partido: Partido): void
-      + confirmarJugador(partido: Partido): void
+      - partido: Partido
+
+      + setContexto(partido: Partido): void
+      + agregarJugador(jugador: Usuario): void
+      + eliminarJugador(jugador: Usuario): void
+      + confirmarJugador(): void
       + cancelarPartido(): void
+      - verificarCantidadJugadores(): void
+      - esOrganizador(jugador: Usuario): boolean
     }
 
     class EstadoPartidoArmado implements EstadoPartido {
-      + agregarJugador(partido: Partido): void
-      + eliminarJugador(partido: Partido): void
-      + confirmarJugador(partido: Partido): void
+      - partido: Partido
+
+      + setContexto(partido: Partido): void
+      + agregarJugador(jugador: Usuario): void
+      + eliminarJugador(jugador: Usuario): void
+      + confirmarJugador(): void
       + cancelarPartido(): void
-      - jugadorConfirmado(jugador: Usuario): boolean
+      - esOrganizador(jugador: Usuario): boolean
     }
 
     class EstadoPartidoConfirmado implements EstadoPartido {
-      + agregarJugador(partido: Partido): void
-      + eliminarJugador(partido: Partido): void
-      + confirmarJugador(partido: Partido): void
+      - partido: Partido
+
+      + setContexto(partido: Partido): void
+      + agregarJugador(jugador: Usuario): void
+      + eliminarJugador(jugador: Usuario): void
+      + confirmarJugador(): void
       + cancelarPartido(): void
-      + verificarInicio(partido: Partido, ahora: LocalDateTime): void
+      + verificarInicio(ahora: LocalDateTime): void
+      - esOrganizador(jugador: Usuario): boolean
     }
 
     class EstadoPartidoEnJuego implements EstadoPartido {
-      + agregarJugador(partido: Partido): void
-      + eliminarJugador(partido: Partido): void
-      + confirmarJugador(partido: Partido): void
+      - partido: Partido
+
+      + setContexto(partido: Partido): void
+      + agregarJugador(jugador: Usuario): void
+      + eliminarJugador(jugador: Usuario): void
+      + confirmarJugador(): void
       + cancelarPartido(): void
-      + finalizarPartido(partido: Partido): void
+      + finalizarPartido(): void
+      + verificarFinalizacion(ahora: LocalDateTime): void
     }
 
     class EstadoPartidoFinalizado implements EstadoPartido {
-      + agregarJugador(partido: Partido): void
-      + eliminarJugador(partido: Partido): void
-      + confirmarJugador(partido: Partido): void
+      - partido: Partido
+
+      + setContexto(partido: Partido): void
+      + agregarJugador(jugador: Usuario): void
+      + eliminarJugador(jugador: Usuario): void
+      + confirmarJugador(): void
       + cancelarPartido(): void
     }
 
     class EstadoPartidoCancelado implements EstadoPartido {
-      + agregarJugador(partido: Partido): void
-      + eliminarJugador(partido: Partido): void
-      + confirmarJugador(partido: Partido): void
+      - partido: Partido
+
+      + setContexto(partido: Partido): void
+      + agregarJugador(jugador: Usuario): void
+      + eliminarJugador(jugador: Usuario): void
+      + confirmarJugador(): void
       + cancelarPartido(): void
     }
   }
@@ -289,12 +264,14 @@ package "Adapter" #FFFEE0 {
   together {
     class FirebaseAdapter implements INotificacionAdapter {
       - firebase: Firebase
+
       + FirebaseAdapter(firebase: Firebase)
       + enviar(destino: String, mensaje: String): void
     }
 
     class MailAdapter implements INotificacionAdapter {
       - mailer: Mail
+
       + MailAdapter(mailer: Mail)
       + enviar(destinatario: String, mensaje: String): void
     }
@@ -346,18 +323,24 @@ package "DTO" #F0F0F0 {
 
 ' RELACIONES!!
 
-Partido o-- EstadoPartido
-Partido o-- EstrategiaEmparejamiento
+Partido "1" o--> "1" EstadoPartido : tiene >
 
-Partido "*" -- "1" Deporte
-Partido "*" -- "1" Ubicacion
-Partido "*" -- "*" Usuario : jugadoresAnotados
+EstadoBuscandoJugadores ..> "*" Partido : <
+EstadoPartidoArmado ..> "*" Partido : <
+EstadoPartidoConfirmado ..> "*" Partido : <
+EstadoPartidoEnJuego ..> "*" Partido : <
+EstadoPartidoFinalizado ..> "*" Partido : <
+EstadoPartidoCancelado ..> "*" Partido : <
+
+Partido "*" o-- "1" Deporte
+Partido "*" o-- "1" Ubicacion
+Partido "*" o-- "*" Usuario : jugadoresAnotados
 Partido "*" -- "1" Usuario : organizador
 Usuario "1" -- "*" UsuarioDeporte
 UsuarioDeporte "*" -- "1" Deporte
 Usuario "1" -- "1" Ubicacion
-Partido "1" -- "*" Notificador : observadores
-Notificador "*" -- "1" Usuario : notifica a >
+Partido "1" o-- "*" Notificador : observadores
+Notificador "*" -- "*" Usuario : notifica a >
 
 Notificador o-- INotificacionAdapter
 FirebaseAdapter *-- Firebase

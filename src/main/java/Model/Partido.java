@@ -2,8 +2,6 @@ package Model;
 
 import Strategy.EstrategiaEmparejamiento;
 import DTO.PartidoDTO;
-import DTO.UbicacionDTO;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -45,7 +43,6 @@ public class Partido {
 		this.duracion = duracion;
 		this.organizador = organizador;
 		this.estrategiaEmparejamiento = estrategia;
-		this.estado = new EstadoBuscandoJugadores();
 		this.jugadoresAnotados = new ArrayList<>();
 		this.observadores = new ArrayList<>();
 		this.fechaHora = fechaHora;
@@ -53,11 +50,15 @@ public class Partido {
 		this.nivelMinimo = Nivel.PRINCIPIANTE;
 		this.nivelMaximo = Nivel.AVANZADO;
 		this.minPartidosRequeridos = 0;
+
+		// Inicialización del estado con contexto
+		this.estado = new EstadoBuscandoJugadores();
+		this.estado.setContexto(this);
 	}
+
 	public void agregarJugador(Usuario jugador) {
 		if (!jugadoresAnotados.contains(jugador)) {
-			jugadoresAnotados.add(jugador);
-			estado.agregarJugador(this);
+			estado.agregarJugador(jugador);
 		} else {
 			System.out.println("El jugador ya está anotado en este partido.");
 		}
@@ -65,8 +66,7 @@ public class Partido {
 
 	public void eliminarJugador(Usuario jugador) {
 		if (jugadoresAnotados.contains(jugador)) {
-			jugadoresAnotados.remove(jugador);
-			estado.eliminarJugador(this);
+			estado.eliminarJugador(jugador);
 		} else {
 			System.out.println("El jugador no está anotado en este partido.");
 		}
@@ -74,12 +74,12 @@ public class Partido {
 
 	public void cambiarEstado(EstadoPartido nuevoEstado) {
 		this.estado = nuevoEstado;
+		this.estado.setContexto(this);  // Establecer el contexto en el nuevo estado
 		this.notificar();
 	}
 
 	public void cancelarPartido() {
-		this.estado = new EstadoPartidoCancelado();
-		this.notificar();
+		estado.cancelarPartido();
 	}
 
 	public void notificar() {
@@ -106,19 +106,19 @@ public class Partido {
 		// Si llegó la hora del partido y está confirmado, pasará al estado "En juego"
 		if (ahora.isAfter(fechaHora) && estado instanceof EstadoPartidoConfirmado) {
 			cambiarEstado(new EstadoPartidoEnJuego());
+			System.out.println("El partido ha comenzado y pasa a estado En Juego!");
 		}
 
 		// Si terminó el partido, pasará al estado "Finalizado"
 		if (estado instanceof EstadoPartidoEnJuego &&
 			ahora.isAfter(fechaHora.plusMinutes(duracion))) {
 			cambiarEstado(new EstadoPartidoFinalizado());
+			System.out.println("El partido ha finalizado!");
 		}
 	}
 
 	public void confirmarJugadores() {
-		if (estado instanceof EstadoPartidoArmado) {
-			estado.confirmarJugador(this);
-		}
+		estado.confirmarJugador();
 	}
 
 	public void agregarObservador(Notificador observador) {

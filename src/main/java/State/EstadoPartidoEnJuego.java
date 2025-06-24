@@ -1,31 +1,50 @@
 package State;
 
 import Model.Partido;
+import Model.Usuario;
+import java.time.LocalDateTime;
 
 public class EstadoPartidoEnJuego implements EstadoPartido {
+    private Partido partido;
 
-	@Override
-	public void agregarJugador(Partido partido) {
-		System.out.println("No se pueden agregar jugadores a un partido en juego. Cualquiera lo tuyo");
-	}
+    @Override
+    public void setContexto(Partido partido) {
+        this.partido = partido;
+    }
 
-	@Override
-	public void eliminarJugador(Partido partido) {
-		System.out.println("El partido está en juego, no se pueden eliminar jugadores.");
-	}
+    @Override
+    public void agregarJugador(Usuario jugador) {
+        System.out.println("No se pueden agregar jugadores a un partido en juego.");
+    }
 
-	@Override
-	public void confirmarJugador(Partido partido) {
-		System.out.println("El partido está en juego, no se pueden confirmar jugadores..");
-	}
+    @Override
+    public void eliminarJugador(Usuario jugador) {
+        System.out.println("El partido está en juego, no se pueden eliminar jugadores.");
+    }
 
-	@Override
-	public void cancelarPartido() {
-		System.out.println("El partido está en juego, no se pueden cancelar (?.");
-	}
+    @Override
+    public void confirmarJugador() {
+        System.out.println("El partido está en juego, no se pueden confirmar jugadores.");
+    }
 
-	public void finalizarPartido(Partido partido) {
-		partido.cambiarEstado(new EstadoPartidoFinalizado());
-		System.out.println("El partido terminó, y pasó a estado: Finalizado");
-	}
+    @Override
+    public void cancelarPartido() {
+        System.out.println("El partido está en juego, no se puede cancelar.");
+    }
+
+    public void finalizarPartido() {
+        partido.cambiarEstado(new EstadoPartidoFinalizado());
+        System.out.println("El partido ha terminado, y ha pasado a estado: Finalizado");
+    }
+
+    public void verificarFinalizacion(LocalDateTime ahora) {
+        if (ahora.isAfter(partido.getFechaHora().plusMinutes(partido.getDuracion()))) {
+            finalizarPartido();
+        }
+    }
+
+    @Override
+    public String getNombreEstado() {
+        return "Partido en juego";
+    }
 }

@@ -73,7 +73,7 @@ public class Main {
     private static void crearDeportesDisponibles() {
         // Acá, crea los deportes disponibles en el sistema, para que los usuarios los puedan seleccionar.
         List<Deporte> listaDeportes = new ArrayList<>();
-        listaDeportes.add(new Deporte("Fútbol", 5, 11));
+        listaDeportes.add(new Deporte("Futbol", 5, 11));
         listaDeportes.add(new Deporte("Básquet", 5, 5));
         listaDeportes.add(new Deporte("Vóley", 6, 6));
         listaDeportes.add(new Deporte("Tenis", 2, 4));

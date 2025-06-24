@@ -2,45 +2,57 @@ package State;
 
 import Model.Partido;
 import Model.Usuario;
+import State.EstadoBuscandoJugadores;
+import State.EstadoPartidoConfirmado;
 
 public class EstadoPartidoArmado implements EstadoPartido {
+    private Partido partido;
 
-	@Override
-	public void agregarJugador(Partido partido) {
-		System.out.println("No se puede! El partido ya tiene a todos sus jugadores anotados y está armado!");
-	}
+    @Override
+    public void setContexto(Partido partido) {
+        this.partido = partido;
+    }
 
-	@Override
-	public void eliminarJugador(Partido partido) {
-		System.out.println("Jugador eliminado del partido armado.");
-		if (partido.getJugadoresAnotados().size() < partido.getCantidadJugadoresRequeridos()) {
-			partido.cambiarEstado(new EstadoBuscandoJugadores());
-			System.out.println("Se bajó alguien, el partido ahora volvió a Buscando Jugadores");
-		}
-	}
+    @Override
+    public void agregarJugador(Usuario jugador) {
+        System.out.println("No se puede agregar más jugadores al partido armado. Ya se completó el cupo necesario.");
+    }
 
-	@Override
-	public void confirmarJugador(Partido partido) {
-		System.out.println("Jugador confirmado para el partido.");
-		boolean todosConfirmados = true;
-		for (Usuario jugador : partido.getJugadoresAnotados()) {
-			if (!jugadorConfirmado(jugador)) {
-				todosConfirmados = false;
-				break;
-			}
-		}
-		if (todosConfirmados) {
-			partido.cambiarEstado(new EstadoPartidoConfirmado());
-			System.out.println("Todos confirmaron el partido! Partido pasa a estado Confirmado!");
-		}
-	}
+    @Override
+    public void eliminarJugador(Usuario jugador) {
+        if (esOrganizador(jugador)) {
+            System.out.println("El organizador no puede abandonar el partido sin cancelarlo.");
+            return;
+        }
 
-	@Override
-	public void cancelarPartido() {
-		System.out.println("Partido armado ha sido cancelado. Que bajon");
-	}
+        System.out.println("Jugador eliminado del partido armado.");
+        partido.getJugadoresAnotados().remove(jugador);
+        if (partido.getJugadoresAnotados().size() < partido.getCantidadJugadoresRequeridos()) {
+            partido.cambiarEstado(new EstadoBuscandoJugadores());
+            System.out.println("Se bajó alguien, el partido ahora volvió a Buscando Jugadores");
+        }
+    }
 
-	private boolean jugadorConfirmado(Usuario jugador) {
-		return true; // Para hacerlo simple, "asumo" que estan todos confirmados
-	}
+    @Override
+    public void confirmarJugador() {
+        System.out.println("Todos los jugadores confirmaron su participación.");
+        partido.cambiarEstado(new EstadoPartidoConfirmado());
+        System.out.println("¡El partido ha sido confirmado!");
+    }
+
+    @Override
+    public void cancelarPartido() {
+        System.out.println("Cancelando partido armado.");
+        partido.cambiarEstado(new EstadoPartidoCancelado());
+        System.out.println("Partido cancelado exitosamente.");
+    }
+
+    @Override
+    public String getNombreEstado() {
+        return "Partido armado";
+    }
+
+    private boolean esOrganizador(Usuario jugador) {
+        return jugador.equals(partido.getOrganizador());
+    }
 }

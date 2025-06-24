@@ -69,10 +69,7 @@ public class UsuarioController {
     public UsuarioDTO iniciarSesion(String nombre, String contrasena) {
         for (Usuario u : usuarios) {
             if (u.getNombreUsuario().equals(nombre) && u.getPassword().equals(contrasena)) {
-                u.setSesion(true);
-                this.setUsuario(u);
-                System.out.println("Login exitoso para el usuario: " + nombre);
-                return u.toDTO();
+                return u.login(u.getNombreUsuario(), u.getPassword());
             }
         }
         System.out.println("Usuario o contraseña incorrectos. Intente nuevamente.");
@@ -81,11 +78,9 @@ public class UsuarioController {
 
     public UsuarioDTO cerrarSesion() {
         if (usuario != null && usuario.isSesion()) {
-            usuario.setSesion(false);
-            System.out.println("Sesión cerrada para: " + usuario.getNombreUsuario());
-            UsuarioDTO dto = usuario.toDTO();
-            this.usuario = null;
-            return dto;
+            UsuarioDTO devolver = usuario.logout();
+            usuario = null;
+            return devolver;
         }
         System.out.println("No hay sesión activa.");
         return null;

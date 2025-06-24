@@ -17,7 +17,6 @@ public class Ubicacion {
 		this.longitud = longitud;
 	}
 
-
 	public double calcularDistancia(Ubicacion otraUbicacion) {
 		double dx = this.latitud - otraUbicacion.latitud;
 		double dy = this.longitud - otraUbicacion.longitud;

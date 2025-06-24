@@ -15,7 +15,7 @@ public class Usuario {
 	private Ubicacion ubicacion;
 	private List<Partido> partidos;
 	private boolean sesion;
-	private int cantidadPartidosJugados; // Esta variable solo se usa para la estrategia de emparejar por historial de partidos.
+	private int cantidadPartidosJugados;
 
 	public Usuario(String nombreUsuario, String correo, String password) {
 		this.nombreUsuario = nombreUsuario;

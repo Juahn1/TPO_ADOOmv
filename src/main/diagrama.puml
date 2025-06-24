@@ -311,11 +311,6 @@ package "DTO" #F0F0F0 {
     - ubicacion: UbicacionDTO
     - duracion: int
     - fechaHora: String
-
-    + PartidoDTO()
-    + PartidoDTO(id: String, nombreDeporte: String, cantidadJugadoresAnotados: int, cantidadJugadoresRequeridos: int, estado: String, ubicacion: UbicacionDTO, duracion: int, fechaHora: String)
-    + PartidoDTO(id: String, deporte: Deporte, cantidadJugadoresRequeridos: int, duracion: int, ubicacion: UbicacionDTO, fechaHora: String)
-    + getters/setters para todos los atributos
   }
 
   class UsuarioDTO {
@@ -327,10 +322,6 @@ package "DTO" #F0F0F0 {
     - historial: List<PartidoDTO>
     - sesion: boolean
     - cantidadPartidosJugados: int
-
-    + UsuarioDTO()
-    + UsuarioDTO(nombreUsuario: String, correo: String, password: String, ubicacion: UbicacionDTO, deportes: List<UsuarioDeporteDTO>, historial: List<PartidoDTO>, sesion: boolean, cantidadPartidosJugados: int)
-    + getters/setters para todos los atributos
   }
 
   class DeporteDTO {
@@ -338,8 +329,6 @@ package "DTO" #F0F0F0 {
     - nombre: String
     - jugadoresMinimos: int
     - jugadoresMaximos: int
-
-    + getters/setters para todos los atributos
   }
 
   class UbicacionDTO {
@@ -347,19 +336,11 @@ package "DTO" #F0F0F0 {
     - longitud: double
     - direccion: String
     - ciudad: String
-
-    + UbicacionDTO()
-    + UbicacionDTO(latitud: double, longitud: double, direccion: String, ciudad: String)
-    + getters/setters para todos los atributos
   }
 
   class UsuarioDeporteDTO {
     - nivel: Nivel
     - deporte: DeporteDTO
-
-    + UsuarioDeporteDTO()
-    + UsuarioDeporteDTO(nivel: Nivel, deporte: DeporteDTO)
-    + getters/setters para todos los atributos
   }
 }
 
